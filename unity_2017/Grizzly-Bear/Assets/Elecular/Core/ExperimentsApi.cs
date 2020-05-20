@@ -18,10 +18,7 @@ namespace Elecular.Core
 
 		private static ExperimentsApi instance;
 
-		private ExperimentsApi()
-		{
-			
-		}
+		private ExperimentsApi() {}
 		
 		/// <summary>
 		/// Gets the Singleton Instance of Experiments API

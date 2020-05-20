@@ -11,4 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76bbf83d2192a44f2892c3dcbbe2c4b4, type: 3}
   m_Name: Experiment 1
   m_EditorClassIdentifier: 
-  experimentName: 
+  experimentName: Experiment 1

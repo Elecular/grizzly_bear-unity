@@ -17,6 +17,8 @@ namespace Elecular.Core
 		private UnityWebRequest[] unityWebRequests;
 
 		private static RequestCoroutineManager coroutineManager;
+
+		private static Request mockRequest; //Used for testing
 		
 		/// <summary>
 		/// Makes a new Request entity
@@ -25,6 +27,7 @@ namespace Elecular.Core
 		/// <returns></returns>
 		public static Request Get(string uri)
 		{
+			if (mockRequest != null) return mockRequest; //Used for testing
 			var requests = new UnityWebRequest[NUMBER_OF_RETRIES];
 			for (var count = 0; count < NUMBER_OF_RETRIES; count++)
 			{
@@ -33,7 +36,7 @@ namespace Elecular.Core
 			return new Request(requests);
 		}
 
-		private Request(UnityWebRequest[] unityWebRequests)
+		protected Request(UnityWebRequest[] unityWebRequests)
 		{
 			if (coroutineManager == null)
 			{
@@ -49,7 +52,7 @@ namespace Elecular.Core
 		/// <param name="onResponse">Response callback</param>
 		/// <param name="onError">Error callback</param>
 		/// <typeparam name="T">Type of response. The response is parsed into the give type. It must be a simple serializable class</typeparam>
-		public void Send<T>(UnityAction<T> onResponse, UnityAction onError)
+		public virtual void Send<T>(UnityAction<T> onResponse, UnityAction onError)
 		{
 			coroutineManager.StartCoroutine(StartProcessingRequest(res =>
 			{
@@ -60,6 +63,16 @@ namespace Elecular.Core
 				}
 				onResponse(JsonUtility.FromJson<T>(res));
 			}, onError));
+		}
+		
+		/// <summary>
+		/// This method is used for testing.
+		/// Its sets a mock request that is returned when Get or Post is called
+		/// </summary>
+		/// <param name="request"></param>
+		public static void SetMockRequest(Request request)
+		{
+			mockRequest = request;
 		}
 		
 		private IEnumerator StartProcessingRequest(UnityAction<string> onResponse, UnityAction onError)

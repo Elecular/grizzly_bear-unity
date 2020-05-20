@@ -15,7 +15,7 @@ namespace Example_Scenes
 			experiment.GetVariation(variation =>
 			{
 				Debug.Log(variation.Settings);
-			});
+			}, null, "user1");
 			ElecularApi.Instance.GetAllVariations("Experiment 1", variations =>
 			{
 				Debug.Log(variations);

@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Elecular.API
 {
@@ -35,6 +34,15 @@ namespace Elecular.API
 				#endif
 				return projectId;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the project id without triggering an editor warning if it is empty.
+		/// </summary>
+		/// <returns></returns>
+		public string GetProjectIdWithoutWarning()
+		{
+			return projectId;
 		}
 	}	
 }
