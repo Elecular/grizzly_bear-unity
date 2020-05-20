@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -50,10 +49,15 @@ namespace Elecular.Core
 		/// <param name="onResponse">Response callback</param>
 		/// <param name="onError">Error callback</param>
 		/// <typeparam name="T">Type of response. The response is parsed into the give type. It must be a simple serializable class</typeparam>
-		public void Send<T>(UnityAction<T> onResponse, UnityAction onError=null)
+		public void Send<T>(UnityAction<T> onResponse, UnityAction onError)
 		{
 			coroutineManager.StartCoroutine(StartProcessingRequest(res =>
 			{
+				//If the response is an array, we need to wrap it in an object to make it parsable
+				if (res[0] == '[' && res[res.Length - 1] == ']')
+				{
+					res = "{ \"array\": " + res + "}";
+				}
 				onResponse(JsonUtility.FromJson<T>(res));
 			}, onError));
 		}

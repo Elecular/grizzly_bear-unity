@@ -1,19 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Elecular.Core;
+using Elecular.API;
 using UnityEngine;
 
 namespace Example_Scenes
 {
 	public class ExampleScript : MonoBehaviour
 	{
-
+		[SerializeField]
+		private Experiment experiment;
+		
 		public void MakeRequest()
 		{
-			var api = new ExperimentsApi();
-			api.GetVariation("test", "5ec39b16750f8d0012e5c027", "Experiment 1", variation =>
+			experiment.GetVariation(variation =>
 			{
-				Debug.Log(variation.variationName);
+				Debug.Log(variation.Settings);
+			});
+			ElecularApi.Instance.GetAllVariations("Experiment 1", variations =>
+			{
+				Debug.Log(variations);
+			});
+			ElecularApi.Instance.GetSetting("Experiment 1", "Button Color", value =>
+			{
+				Debug.Log(value);
 			});
 		}
 	}
