@@ -94,6 +94,7 @@ namespace Elecular.Core
 							? unityWebRequest.downloadHandler.text 
 							: unityWebRequest.error
 						);
+						Debug.LogError("There was an error while making a request. Retying ...");
 						continue;
 					}
 					
