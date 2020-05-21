@@ -10,8 +10,6 @@ namespace Elecular.API
 	/// </summary>
 	public class ElecularApi
 	{
-		private ElecularSettings _settings;
-
 		private static ElecularApi instance;
 		
 		private ElecularApi() {}
@@ -44,7 +42,13 @@ namespace Elecular.API
 			{
 				username = SystemInfo.deviceUniqueIdentifier;
 			}
-			ExperimentsApi.Instance.GetVariation(username, Settings.ProjectId, experimentName, onResponse, onError);
+			ExperimentsApi.Instance.GetVariation(
+				username, 
+				ElecularSettings.Instance.ProjectId, 
+				experimentName, 
+				onResponse, 
+				onError
+			);
 		}
 		
 		/// <summary>
@@ -61,7 +65,7 @@ namespace Elecular.API
 		)
 		{
 			ExperimentsApi.Instance.GetAllVariations(
-				Settings.ProjectId, 
+				ElecularSettings.Instance.ProjectId, 
 				experimentName, 
 				onResponse, 
 				onError
@@ -97,16 +101,6 @@ namespace Elecular.API
 				}
 				onResponse(setting.Value);
 			}, onError, username);
-		}
-
-		private ElecularSettings Settings
-		{
-			get
-			{
-				if (_settings != null) return _settings;
-				_settings = Resources.Load<ElecularSettings>("Elecular/Settings");
-				return _settings;
-			}
 		}
 	}	
 }

@@ -7,8 +7,6 @@ namespace Elecular.Core
 {
 	/// <summary>
 	/// This class is used for getting experiments data from the Experiments API.
-	/// This API is NOT meant to be used directly by a Unity developer.
-	/// Please use <see cref="Elecular.API.ElecularApi"/> instead
 	/// </summary>
 	public class ExperimentsApi
 	{
@@ -70,7 +68,7 @@ namespace Elecular.Core
 		/// </summary>
 		public void ClearCache()
 		{
-			cache = null;
+			cache.Clear();
 		}
 		
 		/// <summary>

@@ -1,6 +1,7 @@
 ﻿using Elecular.Core;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
 namespace Tests.Elecular.Core
 {
@@ -27,6 +28,16 @@ namespace Tests.Elecular.Core
 			{
 				onResponse(JsonUtility.FromJson<T>(mockResponse));	
 			}
+		}
+		
+		/// <summary>
+		/// Gets the request that was made
+		/// </summary>
+		/// <returns></returns>
+		public UnityWebRequest GetUnityWebRequest()
+		{
+			if (unityWebRequests == null || unityWebRequests.Length == 0) return null;
+			return unityWebRequests[0];
 		}
 	}
 }

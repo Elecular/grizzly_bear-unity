@@ -14,7 +14,7 @@ namespace Elecular.Core
 	{
 		private const int NUMBER_OF_RETRIES = 3;
 
-		private UnityWebRequest[] unityWebRequests;
+		protected UnityWebRequest[] unityWebRequests;
 
 		private static RequestCoroutineManager coroutineManager;
 
@@ -27,11 +27,16 @@ namespace Elecular.Core
 		/// <returns></returns>
 		public static Request Get(string uri)
 		{
-			if (mockRequest != null) return mockRequest; //Used for testing
 			var requests = new UnityWebRequest[NUMBER_OF_RETRIES];
 			for (var count = 0; count < NUMBER_OF_RETRIES; count++)
 			{
 				requests[count] = UnityWebRequest.Get(uri);
+			}
+
+			if (mockRequest != null) //Used for testing	
+			{
+				mockRequest.unityWebRequests = requests;
+				return mockRequest; 
 			}
 			return new Request(requests);
 		}

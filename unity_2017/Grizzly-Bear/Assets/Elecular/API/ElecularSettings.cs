@@ -1,16 +1,39 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using System;
+using UnityEngine;
 
 namespace Elecular.API
 {
 	/// <summary>
 	/// This holds all the settings needed for integrating with Elecular
 	/// </summary>
-	[CreateAssetMenu(menuName = "Elecular/Settings")]
 	public class ElecularSettings : ScriptableObject
 	{
+		private const string resourcePath = @"Elecular/Settings";
+		
 		[SerializeField]
 		private string projectId;
 		
+		[NonSerialized]
+		private static ElecularSettings instance;
+		
+		/// <summary>
+		/// Gets the Singleton instance of Elecular Settings
+		/// </summary>
+		public static ElecularSettings Instance
+		{
+			get
+			{
+				if (instance == null)
+				{
+					instance = Resources.Load<ElecularSettings>(resourcePath);
+				}
+				return instance;
+			}
+		}
+
 		/// <summary>
 		/// Project Id of Elecular
 		/// </summary>
@@ -18,31 +41,47 @@ namespace Elecular.API
 		{
 			get
 			{
-				#if UNITY_EDITOR
-				if (projectId == null || projectId.Equals(""))
-				{
-					if (UnityEditor.EditorUtility.DisplayDialog(
-						"Missing Elecular Project Id",
-						"Please set the project id in the Settings file under 'Elecular/Resources/Elecular'. We will highlight the file in the Project view for you.\n\nYou can get the project id by logging into https://app.elecular.com",
-						"ok"
-					))
-					{
-						UnityEditor.EditorApplication.isPlaying = false;
-						UnityEditor.EditorGUIUtility.PingObject(this);
-					}
-				}
-				#endif
 				return projectId;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the project id without triggering an editor warning if it is empty.
-		/// </summary>
-		/// <returns></returns>
-		public string GetProjectIdWithoutWarning()
+		#if UNITY_EDITOR
+		[InitializeOnLoadMethod]
+		private static void InitializeOnLoad()
 		{
-			return projectId;
+			if (Resources.Load<ElecularSettings>(resourcePath) == null)
+			{
+				if(!AssetDatabase.IsValidFolder("Assets/Resources"))
+					AssetDatabase.CreateFolder("Assets", "Resources");
+				if(!AssetDatabase.IsValidFolder("Assets/Resources/Elecular"))
+					AssetDatabase.CreateFolder("Assets/Resources", "Elecular");
+				AssetDatabase.CreateAsset(
+					CreateInstance<ElecularSettings>(), 
+					"Assets/Resources/Elecular/Settings.asset"
+				);
+			}
+			EditorApplication.playModeStateChanged += InitializeSettings; 
 		}
+
+		private static void InitializeSettings(PlayModeStateChange state)
+		{
+			if (state != PlayModeStateChange.EnteredPlayMode) return;
+			
+			var settings = Resources.Load<ElecularSettings>(resourcePath);
+			if (settings.projectId != null && !settings.projectId.Equals("")) return;
+			
+			EditorApplication.isPlaying = false;
+			if (EditorUtility.DisplayDialog(
+				"Please enter Elecular Project ID",
+				"Please set your project id in the Settings file under '" 
+				+ AssetDatabase.GetAssetPath(settings) 
+				+ "'.\n\nYou can get your project id by logging into https://app.elecular.com",
+				"ok"
+			))
+			{
+				EditorGUIUtility.PingObject(settings);	
+			}
+		}
+		#endif
 	}	
 }
