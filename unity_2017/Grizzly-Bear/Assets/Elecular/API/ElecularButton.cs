@@ -72,6 +72,9 @@ namespace Elecular.API
 		public class VariationConfiguration
 		{
 			[SerializeField]
+			private string experimentName;
+			
+			[SerializeField]
 			private string variationName;
 			
 			[SerializeField]

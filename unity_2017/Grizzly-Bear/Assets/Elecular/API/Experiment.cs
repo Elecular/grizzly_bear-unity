@@ -13,7 +13,7 @@ namespace Elecular.API
 	{
 		[SerializeField]
 		private string experimentName;
-		
+
 		/// <summary>
 		/// Gets the variation that is assigned to the user
 		/// By default, the device id is used as the username
@@ -60,6 +60,11 @@ namespace Elecular.API
 		)
 		{
 			ElecularApi.Instance.GetAllVariations(experimentName, onResponse, onError);
+		}
+		
+		public string ExperimentName
+		{
+			get { return experimentName; }
 		}
 	}	
 }

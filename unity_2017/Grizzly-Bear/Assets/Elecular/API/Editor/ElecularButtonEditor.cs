@@ -23,7 +23,7 @@ namespace Elecular.API
 			var serializedVariations = serializedObject.FindProperty("variations");
 			if (serializedVariations.arraySize == 0)
 			{
-				EditorGUILayout.HelpBox("Could not load experiment data. Please check if your project id and experiment id are valid, and click the Reset button", MessageType.Error);
+				EditorGUILayout.HelpBox("Could not load experiment data. Please check if your project/experiment id are valid and click the Reset button to load the variations again", MessageType.Error);
 			}
 			
 			for (var count = 0; count < serializedVariations.arraySize; count++)
@@ -37,9 +37,12 @@ namespace Elecular.API
 			{
 				UpdateVariationConfigurations();
 			}
-			
 			serializedObject.ApplyModifiedProperties();
-			
+
+			if (HasExperimentNameChanged())
+			{
+				EditorGUILayout.HelpBox("It looks like you have changed the experiment name. Can you please click the Reset button to update the variations.", MessageType.Error);
+			}
 		}
 
 		private void DrawVariationConfiguration(SerializedProperty serializedVariation)
@@ -93,6 +96,9 @@ namespace Elecular.API
 					serializedVariation
 						.FindPropertyRelative("variationName")
 						.stringValue = variations[count].Name;
+					serializedVariation
+						.FindPropertyRelative("experimentName")
+						.stringValue = experiment.ExperimentName;
 				}
 				serializedObject.ApplyModifiedProperties();
 			}, () =>
@@ -100,6 +106,22 @@ namespace Elecular.API
 				serializedVariations.ClearArray();
 				serializedObject.ApplyModifiedProperties();
 			});
+		}
+
+		private bool HasExperimentNameChanged()
+		{
+			var serializedVariations = serializedObject.FindProperty("variations");
+			var experimentName = ((ElecularButton) target).Experiment.ExperimentName;
+			
+			for (var count = 0; count < serializedVariations.arraySize; count++)
+			{
+				var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
+				var expName = serializedVariation
+					.FindPropertyRelative("experimentName")
+					.stringValue;
+				if (!expName.Equals(experimentName)) return true;
+			}
+			return false;
 		}
 	}
 }
