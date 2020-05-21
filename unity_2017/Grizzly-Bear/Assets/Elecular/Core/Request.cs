@@ -19,13 +19,13 @@ namespace Elecular.Core
 		private static RequestCoroutineManager coroutineManager;
 
 		private static Request mockRequest; //Used for testing
-		
+
 		/// <summary>
 		/// Makes a new Request entity
 		/// </summary>
 		/// <param name="uri"></param>
 		/// <returns></returns>
-		public static Request Get(string uri)
+		public static Request Get(string uri) 
 		{
 			var requests = new UnityWebRequest[NUMBER_OF_RETRIES];
 			for (var count = 0; count < NUMBER_OF_RETRIES; count++)
@@ -38,12 +38,20 @@ namespace Elecular.Core
 				mockRequest.unityWebRequests = requests;
 				return mockRequest; 
 			}
+			#if UNITY_EDITOR
+			if (!Application.isPlaying)
+			{
+				return new EditorRequest(requests); 
+			}
+			#endif
 			return new Request(requests);
 		}
 
+		protected Request() {}
+		
 		protected Request(UnityWebRequest[] unityWebRequests)
 		{
-			if (coroutineManager == null)
+			if (coroutineManager == null) 
 			{
 				coroutineManager = new GameObject("Elecular - Request Coroutine Manager")
 					.AddComponent<RequestCoroutineManager>();
@@ -61,11 +69,6 @@ namespace Elecular.Core
 		{
 			coroutineManager.StartCoroutine(StartProcessingRequest(res =>
 			{
-				//If the response is an array, we need to wrap it in an object to make it parsable
-				if (res[0] == '[' && res[res.Length - 1] == ']')
-				{
-					res = "{ \"array\": " + res + "}";
-				}
 				onResponse(JsonUtility.FromJson<T>(res));
 			}, onError));
 		}
@@ -94,16 +97,21 @@ namespace Elecular.Core
 							? unityWebRequest.downloadHandler.text 
 							: unityWebRequest.error
 						);
-						Debug.LogError("There was an error while making a request. Retying ...");
 						continue;
 					}
-					
-					onResponse(unityWebRequest.downloadHandler.text);
+
+					var res = unityWebRequest.downloadHandler.text;
+					if (res.Length > 0 && res[0] == '[' && res[res.Length - 1] == ']')
+					{
+						res = "{ \"array\": " + res + "}";
+					}
+					onResponse(res);
 					success = true;
 					break;
 				}	
 			}
 			if (!success && onError != null) onError();
+			yield return null;
 		}
 	}	
 }

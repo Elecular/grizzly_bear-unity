@@ -1,7 +1,4 @@
-﻿#if UNITY_EDITOR
-using UnityEditor;
-#endif
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Elecular.API
@@ -11,7 +8,7 @@ namespace Elecular.API
 	/// </summary>
 	public class ElecularSettings : ScriptableObject
 	{
-		private const string resourcePath = @"Elecular/Settings";
+		public const string RESOURCE_PATH = @"Elecular/Settings";
 		
 		[SerializeField]
 		private string projectId;
@@ -28,7 +25,7 @@ namespace Elecular.API
 			{
 				if (instance == null)
 				{
-					instance = Resources.Load<ElecularSettings>(resourcePath);
+					instance = Resources.Load<ElecularSettings>(RESOURCE_PATH);
 				}
 				return instance;
 			}
@@ -44,44 +41,5 @@ namespace Elecular.API
 				return projectId;
 			}
 		}
-		
-		#if UNITY_EDITOR
-		[InitializeOnLoadMethod]
-		private static void InitializeOnLoad()
-		{
-			if (Resources.Load<ElecularSettings>(resourcePath) == null)
-			{
-				if(!AssetDatabase.IsValidFolder("Assets/Resources"))
-					AssetDatabase.CreateFolder("Assets", "Resources");
-				if(!AssetDatabase.IsValidFolder("Assets/Resources/Elecular"))
-					AssetDatabase.CreateFolder("Assets/Resources", "Elecular");
-				AssetDatabase.CreateAsset(
-					CreateInstance<ElecularSettings>(), 
-					"Assets/Resources/Elecular/Settings.asset"
-				);
-			}
-			EditorApplication.playModeStateChanged += InitializeSettings; 
-		}
-
-		private static void InitializeSettings(PlayModeStateChange state)
-		{
-			if (state != PlayModeStateChange.EnteredPlayMode) return;
-			
-			var settings = Resources.Load<ElecularSettings>(resourcePath);
-			if (settings.projectId != null && !settings.projectId.Equals("")) return;
-			
-			EditorApplication.isPlaying = false;
-			if (EditorUtility.DisplayDialog(
-				"Please enter Elecular Project ID",
-				"Please set your project id in the Settings file under '" 
-				+ AssetDatabase.GetAssetPath(settings) 
-				+ "'.\n\nYou can get your project id by logging into https://app.elecular.com",
-				"ok"
-			))
-			{
-				EditorGUIUtility.PingObject(settings);	
-			}
-		}
-		#endif
 	}	
 }

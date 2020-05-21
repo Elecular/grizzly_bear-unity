@@ -47,5 +47,19 @@ namespace Elecular.API
 		{
 			ElecularApi.Instance.GetSetting(experimentName, settingName, onResponse, onError, username);
 		}
+		
+		/// <summary>
+		/// Gets all the variations under this experiment
+		/// WARNING: This function is expensive and is only meant to be used in editor
+		/// </summary>
+		/// <param name="onResponse">Callback that is triggered when a variation is returned</param>
+		/// <param name="onError">Callback that is triggered when there is an error</param>
+		public void GetAllVariations(
+			UnityAction<Variation[]> onResponse,
+			UnityAction onError = null
+		)
+		{
+			ElecularApi.Instance.GetAllVariations(experimentName, onResponse, onError);
+		}
 	}	
 }

@@ -12,7 +12,7 @@ namespace Tests.Elecular.Core
 	{
 		private string mockResponse;
 
-		public MockRequest(string mockResponse) : base(null)
+		public MockRequest(string mockResponse)
 		{
 			this.mockResponse = mockResponse;
 		}
