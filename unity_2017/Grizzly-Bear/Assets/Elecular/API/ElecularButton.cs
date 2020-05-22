@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,45 +10,18 @@ namespace Elecular.API
 	/// </summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Button))]
-	public class ElecularButton : MonoBehaviour, IChangeableElement 
+	public class ElecularButton : ChangeableElement<ElecularButton.ButtonVariationConfiguration>
 	{
-		[SerializeField]
-		private Experiment experiment;
-		
 		/// <summary>
 		/// This is a list of variation configurations that define how the button will look like in each variation
 		/// </summary>
 		[SerializeField] 
 		[HideInInspector]
 		private List<ButtonVariationConfiguration> variations = new List<ButtonVariationConfiguration>();
-
-		private Button button;
 		
-		private void Start()
+		protected override void Setup(ButtonVariationConfiguration variationConfiguration)
 		{
-			button = GetComponent<Button>();
-			experiment.GetVariation(variation =>
-			{
-				var variationConfig = GetConfiguration(variation.Name);
-				SetupButton(variationConfig);
-			}, () =>
-			{
-				SetupButton(null);
-			});
-		}
-		
-		/// <summary>
-		/// Sets the button properties based on the given configuration.
-		/// If the configuration is null, it has no effect.
-		/// </summary>
-		/// <param name="variationConfiguration"></param>
-		private void SetupButton(ButtonVariationConfiguration variationConfiguration)
-		{
-			if (variationConfiguration == null || !variationConfiguration.ExperimentName.Equals(experiment.ExperimentName))
-			{
-				Debug.LogError(string.Format("Could not set variation for button: {0}. Please check the ElecularButton Component.", name));
-				return;
-			}
+			var button = GetComponent<Button>();
 			button.transition = variationConfiguration.Transition;
 			button.colors = variationConfiguration.ColorBlock;
 			button.spriteState = variationConfiguration.SpriteState;
@@ -66,17 +37,15 @@ namespace Elecular.API
 			}
 		}
 		
-		/// <summary>
-		/// Finds the configuration of given variation.
-		/// Returns null if the configuration does not exist 
-		/// </summary>
-		/// <param name="variationName"></param>
-		/// <returns></returns>
-		private ButtonVariationConfiguration GetConfiguration(string variationName)
+		/// <inheritdoc />
+		public override IEnumerable<ButtonVariationConfiguration> Configurations
 		{
-			return variations.Find(variation => variation.VariationName.Equals(variationName));
+			get
+			{
+				return variations;
+			}
 		}
-		
+
 		/// <summary>
 		/// This class defines how a button is going to look like in a certain variation
 		/// </summary>
@@ -121,24 +90,6 @@ namespace Elecular.API
 			public Sprite SourceImage
 			{
 				get { return sourceImage; }
-			}
-		}
-
-		/// <inheritdoc />
-		public Experiment Experiment
-		{
-			get
-			{
-				return experiment;
-			}
-		}
-
-		/// <inheritdoc />
-		public IEnumerable<VariationConfiguration> Configurations
-		{
-			get
-			{
-				return variations.Cast<VariationConfiguration>();
 			}
 		}
 	}

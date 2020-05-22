@@ -53,37 +53,6 @@ namespace Elecular.API
 		}
 
 		/// <summary>
-		/// Gets the setting's value that is assigned to the user 
-		/// </summary>
-		/// <param name="experimentName">Name of the experiment</param>
-		/// <param name="settingName">Name of the Setting</param>
-		/// <param name="onResponse">Callback that is triggered when the setting value is returned</param>
-		/// <param name="onError">Callback that is triggered when there is an error</param>
-		/// <param name="username">By default device id is used (Optional)</param>
-		public void GetSetting(
-			string experimentName, 
-			string settingName, 
-			UnityAction<string> onResponse,
-			UnityAction onError = null, 
-			string username = null
-		)
-		{
-			GetVariation(experimentName, variation =>
-			{
-				var setting  = variation.Settings.FirstOrDefault(
-					s => s.Name.Equals(settingName)
-				);
-				if (setting == null)
-				{
-					Debug.LogError("Setting not found under given experiment");
-					if (onError != null) onError();
-					return;
-				}
-				onResponse(setting.Value);
-			}, onError, username);
-		}
-		
-		/// <summary>
 		/// Gets the variation that corresponds to the given variation name
 		/// WARNING: This function is expensive and is only meant to be used in editor
 		/// </summary>

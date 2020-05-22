@@ -93,10 +93,6 @@ namespace Elecular.Core
 					yield return unityWebRequest.SendWebRequest();
 					if (unityWebRequest.isNetworkError || unityWebRequest.isHttpError)
 					{
-						Debug.LogError(!unityWebRequest.downloadHandler.text.Equals("")
-							? unityWebRequest.downloadHandler.text 
-							: unityWebRequest.error
-						);
 						continue;
 					}
 

@@ -90,9 +90,8 @@ namespace Elecular.Core
 			);
 			Request.Get(experimentUri).Send<Experiments>(experiments =>
 			{
-				if (experiments == null || experiments.array.Length == 0)
+				if (experiments == null || experiments.array == null || experiments.array.Length == 0)
 				{
-					Debug.LogError("Invalid Experiment");
 					if(onError != null) onError();
 					return;
 				}

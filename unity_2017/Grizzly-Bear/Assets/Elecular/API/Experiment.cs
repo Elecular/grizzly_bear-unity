@@ -1,4 +1,5 @@
-﻿using Elecular.Core;
+﻿using System.Linq;
+using Elecular.Core;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -29,6 +30,7 @@ namespace Elecular.API
 		)
 		{
 			#if UNITY_EDITOR
+			//If the developer forcefully sets a variation for testing
 			var forcedVariation = GetForcedVariation();
 			if (forcedVariation != null && !forcedVariation.Equals(""))
 			{
@@ -53,7 +55,19 @@ namespace Elecular.API
 			string username = null
 		)
 		{
-			ElecularApi.Instance.GetSetting(experimentName, settingName, onResponse, onError, username);
+			GetVariation(variation =>
+			{
+				var setting  = variation.Settings.FirstOrDefault(
+					s => s.Name.Equals(settingName)
+				);
+				if (setting == null)
+				{
+					Debug.LogError("Setting not found under given experiment");
+					if (onError != null) onError();
+					return;
+				}
+				onResponse(setting.Value);
+			}, onError, username);
 		}
 		
 		/// <summary>

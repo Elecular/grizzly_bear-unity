@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace Elecular.API
 {
 	[CustomEditor(typeof(ElecularButton))]
-	public class ElecularButtonEditor : ChangeableElementEditor 
+	public class ElecularButtonEditor : ChangeableElementEditor<ElecularButton.ButtonVariationConfiguration>
 	{
 		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration)
 		{

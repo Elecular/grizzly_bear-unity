@@ -10,13 +10,13 @@ namespace Elecular.API
 	/// This is an editor used for drawing Changeable Elements.
 	/// This draws the configuration of the changeable element for each variation.
 	/// </summary>
-	public abstract class ChangeableElementEditor : Editor 
+	public abstract class ChangeableElementEditor<T> : Editor where T : VariationConfiguration
 	{
 		public override void OnInspectorGUI()
 		{
-			if (!(target is IChangeableElement))
+			if (!(target is ChangeableElement<T>))
 			{
-				EditorGUILayout.HelpBox("Target for a ChangeableElementEditor must be an IChangeable Element", MessageType.Error);
+				EditorGUILayout.HelpBox("Target for a ChangeableElementEditor must be an Changeable Element", MessageType.Error);
 				return;
 			}
 			
@@ -62,7 +62,7 @@ namespace Elecular.API
 
 		private void UpdateVariationConfigurations()
 		{
-			var experiment = ((IChangeableElement) target).Experiment;
+			var experiment = ((ChangeableElement<T>) target).Experiment;
 			var serializedVariations = serializedObject.FindProperty("variations");
 	
 			if (experiment == null)
@@ -95,7 +95,7 @@ namespace Elecular.API
 		
 		private bool HasExperimentNameChanged()
 		{
-			var element = (IChangeableElement) target;
+			var element = (ChangeableElement<T>) target;
 			if (element.Experiment == null) return false;
 			var experimentName = element.Experiment.ExperimentName;
 			var variations = element.Configurations;
