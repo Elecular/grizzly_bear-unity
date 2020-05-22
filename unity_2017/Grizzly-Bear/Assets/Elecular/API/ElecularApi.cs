@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Elecular.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -50,28 +51,7 @@ namespace Elecular.API
 				onError
 			);
 		}
-		
-		/// <summary>
-		/// Gets all the variations under given experiment
-		/// WARNING: This function is expensive and is only meant to be used in editor
-		/// </summary>
-		/// <param name="experimentName">Name of the experiment</param>
-		/// <param name="onResponse">Callback that is triggered when a variation is returned</param>
-		/// <param name="onError">Callback that is triggered when there is an error</param>
-		public void GetAllVariations(
-			string experimentName, 
-			UnityAction<Variation[]> onResponse, 
-			UnityAction onError=null
-		)
-		{
-			ExperimentsApi.Instance.GetAllVariations(
-				ElecularSettings.Instance.ProjectId, 
-				experimentName, 
-				onResponse, 
-				onError
-			);
-		}
-		
+
 		/// <summary>
 		/// Gets the setting's value that is assigned to the user 
 		/// </summary>
@@ -101,6 +81,58 @@ namespace Elecular.API
 				}
 				onResponse(setting.Value);
 			}, onError, username);
+		}
+		
+		/// <summary>
+		/// Gets the variation that corresponds to the given variation name
+		/// WARNING: This function is expensive and is only meant to be used in editor
+		/// </summary>
+		/// <param name="experimentName">Name of the experiment</param>
+		/// <param name="variationName">Name of the variation</param>
+		/// <param name="onResponse">Callback that is triggered when a variation is returned</param>
+		/// <param name="onError">Callback that is triggered when there is an error</param>
+		/// <returns>The variation assigned to this user</returns>
+		public void GetVariation(
+			string experimentName,
+			string variationName,
+			UnityAction<Variation> onResponse, 
+			UnityAction onError=null
+		)
+		{
+			GetAllVariations(experimentName, variations =>
+			{
+				try
+				{
+					onResponse(
+						variations.FirstOrDefault(variation => variation.Name.Equals(variationName))
+					);
+				}
+				catch (Exception e)
+				{
+					if(onError!=null) onError();
+				}
+			}, onError);
+		}
+		
+		/// <summary>
+		/// Gets all the variations under given experiment
+		/// WARNING: This function is expensive and is only meant to be used in editor
+		/// </summary>
+		/// <param name="experimentName">Name of the experiment</param>
+		/// <param name="onResponse">Callback that is triggered when a variation is returned</param>
+		/// <param name="onError">Callback that is triggered when there is an error</param>
+		public void GetAllVariations(
+			string experimentName, 
+			UnityAction<Variation[]> onResponse, 
+			UnityAction onError=null
+		)
+		{
+			ExperimentsApi.Instance.GetAllVariations(
+				ElecularSettings.Instance.ProjectId, 
+				experimentName, 
+				onResponse, 
+				onError
+			);
 		}
 	}	
 }

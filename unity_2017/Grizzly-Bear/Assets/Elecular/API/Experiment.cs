@@ -28,6 +28,14 @@ namespace Elecular.API
 			string username=null
 		)
 		{
+			#if UNITY_EDITOR
+			var forcedVariation = GetForcedVariation();
+			if (forcedVariation != null && !forcedVariation.Equals(""))
+			{
+				ElecularApi.Instance.GetVariation(experimentName, forcedVariation, onResponse, onError);
+				return;
+			}
+			#endif
 			ElecularApi.Instance.GetVariation(experimentName, onResponse, onError, username);
 		}
 		
@@ -62,9 +70,27 @@ namespace Elecular.API
 			ElecularApi.Instance.GetAllVariations(experimentName, onResponse, onError);
 		}
 		
+		/// <summary>
+		/// Name of the experiment
+		/// </summary>
 		public string ExperimentName
 		{
 			get { return experimentName; }
 		}
+		
+		#if UNITY_EDITOR
+		
+		/// <summary>
+		/// If the developer wants to see how his/her mobile game looks like in a certain variation,
+		/// we can force set the variation.
+		/// </summary>
+		/// <returns></returns>
+		private string GetForcedVariation()
+		{
+			var guid = UnityEditor.AssetDatabase.AssetPathToGUID(UnityEditor.AssetDatabase.GetAssetPath(this));
+			return UnityEditor.EditorPrefs.GetString(string.Format("elecular-{0}-selected-variation", guid));
+		}
+		
+		#endif
 	}	
 }
