@@ -11,13 +11,15 @@ namespace Elecular.API
 	/// </summary>
 	public class ElecularApi
 	{
-		private SessionNotifier sessionNotifier;
+		private string sessionId;
 		
-		private static ElecularApi instance;
-
+		private string environment;
+		
 		private UserData userData = new UserData();
 
-		private string environment;
+		private SessionNotifier sessionNotifier;
+
+		private static ElecularApi instance;
 		
 		private ElecularApi() {}
 
@@ -32,7 +34,7 @@ namespace Elecular.API
 			sessionNotifier.Register(OnNewSession);
 		}
 		
-		private void OnNewSession(string sessionId)
+		private void OnNewSession()
 		{
 			var session = new UserActivityApi.Session(
 				SystemInfo.deviceUniqueIdentifier,
@@ -41,8 +43,11 @@ namespace Elecular.API
 			);
 			UserActivityApi.Instance.LogSession(
 				ElecularSettings.Instance.ProjectId, 
-				session, 
-				() => {},
+				session,
+				id =>
+				{
+					sessionId = id;
+				},
 				() =>
 				{
 					Debug.LogError("Error while logging user session. Please check if project id is valid.");
@@ -92,6 +97,32 @@ namespace Elecular.API
 				onError
 			);
 		}
+		
+		/// <summary>
+		/// Logs an ad impression.
+		/// An ad impression is when an ad is displayed to the user
+		/// </summary>
+		/// <param name="placementId">Placement id of the ad</param>
+		public void LogAdImpression(string placementId)
+		{
+			LogActivity("ads/impression", 1, () =>
+			{
+				LogActivity(string.Format("ads/impression/{0}", placementId), 1);
+			});
+		}
+		
+		/// <summary>
+		/// Logs an ad click.
+		/// An ad click is when the user clicks an ad.
+		/// </summary>
+		/// <param name="placementId">Placement id of the ad</param>
+		public void LogAdClick(string placementId)
+		{
+			LogActivity("ads/click", 1, () =>
+			{
+				LogActivity(string.Format("ads/click/{0}", placementId), 1);
+			});
+		}
 
 		/// <summary>
 		/// Gets the variation that corresponds to the given variation name
@@ -111,16 +142,7 @@ namespace Elecular.API
 		{
 			GetAllVariations(experimentName, variations =>
 			{
-				try
-				{
-					onResponse(
-						variations.FirstOrDefault(variation => variation.Name.Equals(variationName))
-					);
-				}
-				catch (Exception e)
-				{
-					if(onError!=null) onError();
-				}
+				onResponse(variations.FirstOrDefault(variation => variation.Name.Equals(variationName)));
 			}, onError);
 		}
 		
@@ -146,11 +168,15 @@ namespace Elecular.API
 		}
 		
 		/// <summary>
-		/// Gets the Singleton instance of Elecular API
+		/// Is the API initialized
 		/// </summary>
-		public static ElecularApi Instance
+		/// <returns></returns>
+		public bool IsInitialized
 		{
-			get { return instance ?? (instance = new ElecularApi()); }
+			get
+			{
+				return sessionNotifier != null && sessionId != null;
+			}
 		}
 
 		private string GetEnvironment()
@@ -160,6 +186,43 @@ namespace Elecular.API
 				return environment;
 			}
 			return (Application.isEditor ? Environment.Dev : Environment.Prod).GetString();
+		}
+
+		private void LogActivity(string userAction, float amount, UnityAction onResponse=null)
+		{
+			if (userAction == null)
+			{
+				Debug.LogError("User action cannot be null");
+				return;
+			}
+
+			if (!IsInitialized)
+			{
+				Debug.LogError("Elecular API is not initialized yet");
+				return;
+			}
+			
+			var activity = new UserActivityApi.Activity(sessionId, userAction, amount);
+			UserActivityApi.Instance.LogActivity(
+				ElecularSettings.Instance.ProjectId,
+				activity,
+				() =>
+				{
+					if (onResponse != null) onResponse();
+				}, 
+				() =>
+				{
+					Debug.LogError("Error while logging user activity: " + userAction);
+				}
+			);
+		}
+
+		/// <summary>
+		/// Gets the Singleton instance of Elecular API
+		/// </summary>
+		public static ElecularApi Instance
+		{
+			get { return instance ?? (instance = new ElecularApi()); }
 		}
 	}	
 }

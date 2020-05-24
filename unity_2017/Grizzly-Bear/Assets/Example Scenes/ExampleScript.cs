@@ -9,4 +9,9 @@ public class ExampleScript : MonoBehaviour {
 	void Start () {
 		ElecularApi.Instance.Initialize();
 	}
+
+	public void Log()
+	{
+		ElecularApi.Instance.LogAdImpression("video");
+	}
 }

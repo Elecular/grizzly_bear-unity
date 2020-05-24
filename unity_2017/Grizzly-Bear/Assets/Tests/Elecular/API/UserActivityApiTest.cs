@@ -14,7 +14,9 @@ namespace Tests.Elecular.API
         public IEnumerator CanLogSession()
         {
             var mockRequest = new MockRequest(
-                mockResponse: @"{}"
+                mockResponse: @"{
+					""_id"": ""fake_session""
+				}"
             );
 			Request.SetMockRequest(mockRequest);
 
@@ -25,7 +27,10 @@ namespace Tests.Elecular.API
 					new string[]{"platform/test"}, 
 					"dev"
 				),
-				() => {},
+				(id) =>
+				{
+					Assert.AreEqual(id, "fake_session");
+				},
 				() => {}
 			);
 			

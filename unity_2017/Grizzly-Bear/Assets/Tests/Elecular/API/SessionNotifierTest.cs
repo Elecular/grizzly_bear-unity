@@ -13,13 +13,13 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CreateNewSessionOnInstantiate()
 		{
-			string sessionId = null;
+			var res = false;
 			var notifier = new GameObject().AddComponent<SessionNotifier>();
-			notifier.Register(id =>
+			notifier.Register(() =>
 			{
-				sessionId = id;
+				res = true;
 			});
-			yield return new WaitUntil(() => sessionId != null);
+			yield return new WaitUntil(() => res);
 		}
 		
 		[UnityTest]
@@ -28,7 +28,7 @@ namespace Tests.Elecular.API
 		{
 			var numberOfSessions = 0;
 			var notifier = new GameObject().AddComponent<SessionNotifier>();
-			notifier.Register(id =>
+			notifier.Register(() =>
 			{
 				numberOfSessions++;
 			});
@@ -52,7 +52,7 @@ namespace Tests.Elecular.API
 		{
 			var numberOfSessions = 0;
 			var notifier = new GameObject().AddComponent<SessionNotifier>();
-			notifier.Register(id =>
+			notifier.Register(() =>
 			{
 				numberOfSessions++;
 			});

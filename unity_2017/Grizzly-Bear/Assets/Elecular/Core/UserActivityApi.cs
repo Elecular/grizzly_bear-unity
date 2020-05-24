@@ -28,19 +28,19 @@ namespace Elecular.Core
 		/// </summary>
 		/// <param name="projectId"></param>
 		/// <param name="session"></param>
-		/// <param name="success"></param>
+		/// <param name="success">Success callback when the session is logged. The passed string is the session id</param>
 		/// <param name="error"></param>
 		public void LogSession(
 			string projectId, 
 			Session session,
-			UnityAction success, 
+			UnityAction<string> success, 
 			UnityAction error
 		)
 		{
 			var uri = string.Format("{0}/projects/{1}/user-session", URI, projectId);
-			Request.Post(uri, JsonUtility.ToJson(session)).Send<object>(res =>
+			Request.Post(uri, JsonUtility.ToJson(session)).Send<Session>(res =>
 			{
-				success();
+				success(res.Id);
 			}, error);
 		}
 		
@@ -72,6 +72,9 @@ namespace Elecular.Core
 		public class Session
 		{
 			[SerializeField] 
+			private string _id;
+			
+			[SerializeField] 
 			private string userId;
 
 			[SerializeField] 
@@ -86,6 +89,11 @@ namespace Elecular.Core
 				this.segments = segments;
 				this.environment = environment;
 			}
+
+			public string Id
+			{
+				get { return _id; }
+			}
 		}
 		
 		/// <summary>
@@ -95,19 +103,19 @@ namespace Elecular.Core
 		public class Activity
 		{
 			[SerializeField] 
-			private string userId;
-
-			[SerializeField] 
 			private string sessionId;
 
 			[SerializeField] 
 			private string userAction;
+			
+			[SerializeField]
+			private float amount;
 
-			public Activity(string userId, string sessionId, string userAction)
+			public Activity(string sessionId, string userAction, float amount)
 			{
-				this.userId = userId;
 				this.sessionId = sessionId;
 				this.userAction = userAction;
+				this.amount = amount;
 			}
 		}
 	}

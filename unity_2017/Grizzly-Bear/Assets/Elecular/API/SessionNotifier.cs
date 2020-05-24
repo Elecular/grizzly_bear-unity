@@ -9,12 +9,6 @@ namespace Elecular.API
 	/// </summary>
 	public class SessionNotifier : MonoBehaviour
 	{
-		[NonSerialized]
-		private string sessionId;
-
-		[NonSerialized] 
-		private float sessionStartTime;
-
 		[NonSerialized] 
 		private float sessionInactiveTimeThreshold;
 		
@@ -25,7 +19,7 @@ namespace Elecular.API
 		private float focusLostTimestamp;
 
 		[NonSerialized] 
-		private UnityAction<string> onNewSession;
+		private UnityAction onNewSession;
 
 		private void Start()
 		{
@@ -47,27 +41,17 @@ namespace Elecular.API
 
 		private void StartNewSession()
 		{
-			sessionId = Guid.NewGuid().ToString();
-			sessionStartTime = Time.realtimeSinceStartup;
 			if (onNewSession != null)
 			{
-				onNewSession(sessionId);
+				onNewSession();
 			}
 		}
-		
-		/// <summary>
-		/// Current User Session Id. If user is inactive for 15 minutes, a new session id is assigned
-		/// </summary>
-		public string SessionId
-		{
-			get { return sessionId; }
-		}
-		
+
 		/// <summary>
 		/// The registered callback is triggered whenever there is a new user session created.
 		/// </summary>
 		/// <param name="onNewSession"></param>
-		public void Register(UnityAction<string> onNewSession)
+		public void Register(UnityAction onNewSession)
 		{
 			this.onNewSession += onNewSession;
 		}
@@ -82,23 +66,6 @@ namespace Elecular.API
 			Debug.LogWarning("Should only be called during testing");
 			if (!Application.isEditor) return;
 			sessionInactiveTimeThreshold = threshold;
-		}
-		
-		private void OnGUI()
-		{
-			if (!ElecularSettings.Instance.DebugMode) return;
-			DrawWindow();
-		}
-		
-		private void DrawWindow()
-		{
-			GUILayout.Window(0, new Rect(10, 10, 260, 25), DrawWindowContents, "Elecular Session Info");
-		}
-
-		private void DrawWindowContents(int windowId)
-		{
-			GUILayout.Label(string.Format("Session Id: {0}", sessionId));
-			GUILayout.Label(string.Format("Elapsed Time: {0}", Mathf.Round(Time.realtimeSinceStartup - sessionStartTime)));
 		}
 	}
 

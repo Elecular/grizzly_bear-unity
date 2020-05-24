@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text;
+using Elecular.API;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -118,6 +119,12 @@ namespace Elecular.Core
 					yield return unityWebRequest.SendWebRequest();
 					if (unityWebRequest.isNetworkError || unityWebRequest.isHttpError)
 					{
+						var error = unityWebRequest.error;
+						if (!unityWebRequest.downloadHandler.text.Equals(""))
+						{
+							error = unityWebRequest.downloadHandler.text;
+						}
+						Debug.LogError(string.Format("The following error occured when Elecular was trying to make an API request:\n{0}", error));
 						continue;
 					}
 
