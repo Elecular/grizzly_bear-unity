@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace Elecular.API
@@ -17,6 +18,8 @@ namespace Elecular.API
 		
 		[SerializeField]
 		private string projectId;
+
+		[SerializeField] private bool debugMode;
 
 		[NonSerialized]
 		private static ElecularSettings instance;
@@ -44,6 +47,14 @@ namespace Elecular.API
 			get
 			{
 				return projectId;
+			}
+		}
+
+		public bool DebugMode
+		{
+			get
+			{
+				return debugMode;
 			}
 		}
 	}	

@@ -13,6 +13,9 @@ namespace Elecular.API
 		private string sessionId;
 
 		[NonSerialized] 
+		private float sessionStartTime;
+
+		[NonSerialized] 
 		private float sessionInactiveTimeThreshold;
 		
 		/// <summary>
@@ -45,9 +48,10 @@ namespace Elecular.API
 		private void StartNewSession()
 		{
 			sessionId = Guid.NewGuid().ToString();
+			sessionStartTime = Time.realtimeSinceStartup;
 			if (onNewSession != null)
 			{
-				onNewSession(sessionId);	
+				onNewSession(sessionId);
 			}
 		}
 		
@@ -75,7 +79,26 @@ namespace Elecular.API
 		/// <param name="threshold"></param>
 		public void SetSessionInactiveTimeThreshold(float threshold)
 		{
-			this.sessionInactiveTimeThreshold = threshold;
+			Debug.LogWarning("Should only be called during testing");
+			if (!Application.isEditor) return;
+			sessionInactiveTimeThreshold = threshold;
+		}
+		
+		private void OnGUI()
+		{
+			if (!ElecularSettings.Instance.DebugMode) return;
+			DrawWindow();
+		}
+		
+		private void DrawWindow()
+		{
+			GUILayout.Window(0, new Rect(10, 10, 260, 25), DrawWindowContents, "Elecular Session Info");
+		}
+
+		private void DrawWindowContents(int windowId)
+		{
+			GUILayout.Label(string.Format("Session Id: {0}", sessionId));
+			GUILayout.Label(string.Format("Elapsed Time: {0}", Mathf.Round(Time.realtimeSinceStartup - sessionStartTime)));
 		}
 	}
 

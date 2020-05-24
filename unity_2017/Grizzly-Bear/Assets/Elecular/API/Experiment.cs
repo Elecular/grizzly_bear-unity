@@ -98,7 +98,7 @@ namespace Elecular.API
 		private string GetForcedVariation()
 		{
 			var guid = UnityEditor.AssetDatabase.AssetPathToGUID(UnityEditor.AssetDatabase.GetAssetPath(this));
-			return UnityEditor.EditorPrefs.GetString(string.Format("elecular-{0}-selected-variation", guid));
+			return UnityEditor.EditorPrefs.GetString(string.Format("elecular-{0}-selected-variation", guid), "");
 		}
 		
 		#endif

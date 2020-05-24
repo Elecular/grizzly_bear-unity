@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Elecular.API
 {
-	public static class ElecularSettingsEditor {
-
+	public static class ElecularSettingsEditor
+	{
 		[InitializeOnLoadMethod]
 		private static void InitializeOnLoad()
 		{

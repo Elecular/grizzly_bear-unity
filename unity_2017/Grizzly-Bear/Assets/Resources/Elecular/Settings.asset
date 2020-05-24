@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   projectId: 5ec39b16750f8d0012e5c027
+  debugMode: 1
