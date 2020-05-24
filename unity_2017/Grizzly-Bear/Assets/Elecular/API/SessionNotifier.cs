@@ -63,8 +63,6 @@ namespace Elecular.API
 		/// <param name="threshold"></param>
 		public void SetSessionInactiveTimeThreshold(float threshold)
 		{
-			Debug.LogWarning("Should only be called during testing");
-			if (!Application.isEditor) return;
 			sessionInactiveTimeThreshold = threshold;
 		}
 	}

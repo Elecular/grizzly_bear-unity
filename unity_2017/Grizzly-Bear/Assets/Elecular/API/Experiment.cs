@@ -79,7 +79,7 @@ namespace Elecular.API
 		{
 			ElecularApi.Instance.GetAllVariations(experimentName, onResponse, onError);
 		}
-		
+
 		/// <summary>
 		/// Name of the experiment
 		/// </summary>

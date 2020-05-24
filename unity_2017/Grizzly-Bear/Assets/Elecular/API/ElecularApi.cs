@@ -11,12 +11,16 @@ namespace Elecular.API
 	/// </summary>
 	public class ElecularApi
 	{
-		private string sessionId;
+		private string sessionId = null;
+
+		private float sessionStartTimestamp;
 		
 		private string environment;
 		
 		private UserData userData = new UserData();
 
+		private UnityAction<string> onNewSession;
+		
 		private SessionNotifier sessionNotifier;
 
 		private static ElecularApi instance;
@@ -25,16 +29,21 @@ namespace Elecular.API
 
 		/// <summary>
 		/// Call this method to initialize Elecular.
-		/// Call this once in a Start function. Do NOT call this during Awake. 
+		/// Call this once in a Start or Awake function.
 		/// </summary>
 		public void Initialize()
 		{
-			sessionNotifier = new GameObject("Session Notifier").AddComponent<SessionNotifier>();
+			if (sessionNotifier != null)
+			{
+				Debug.LogWarning("Do not call Initialize twice");
+				return;
+			}
+			sessionNotifier = new GameObject("Elecular - Session Notifier").AddComponent<SessionNotifier>();
 			GameObject.DontDestroyOnLoad(sessionNotifier.gameObject);
-			sessionNotifier.Register(OnNewSession);
+			sessionNotifier.Register(CreateSession);
 		}
 		
-		private void OnNewSession()
+		private void CreateSession()
 		{
 			var session = new UserActivityApi.Session(
 				SystemInfo.deviceUniqueIdentifier,
@@ -44,15 +53,24 @@ namespace Elecular.API
 			UserActivityApi.Instance.LogSession(
 				ElecularSettings.Instance.ProjectId, 
 				session,
-				id =>
-				{
-					sessionId = id;
-				},
+				OnSessionCreated,
 				() =>
 				{
 					Debug.LogError("Error while logging user session. Please check if project id is valid.");
 				}
 			);
+		}
+
+		private void OnSessionCreated(string id)
+		{
+			if (sessionId != null)
+			{
+				LogCustomEvent("Play time", Time.realtimeSinceStartup - sessionStartTimestamp);
+				ExperimentsApi.Instance.ClearCache();
+			}
+			sessionId = id;
+			sessionStartTimestamp = Time.realtimeSinceStartup;
+			if (onNewSession != null) onNewSession(sessionId);
 		}
 		
 		/// <summary>
@@ -125,6 +143,36 @@ namespace Elecular.API
 		}
 
 		/// <summary>
+		/// Logs a transaction.
+		/// A transaction is when a player purchases an in-game item.
+		/// </summary>
+		/// <param name="productId">Product Id of the in-game item. Ex: 100 Gold</param>
+		/// <param name="price">Price of the product</param>
+		public void LogTransaction(string productId, float price)
+		{
+			LogActivity("transactions/complete", price, () =>
+			{
+				LogActivity(string.Format("transactions/complete/{0}", productId), price);
+			});
+		}
+		
+		/// <summary>
+		/// Logs a custom event
+		/// Custom even could be a level up, achievement completion, button click etc.
+		/// </summary>
+		/// <param name="eventId">Name of the event. Example: Level Complete</param>
+		/// <param name="amount">An amount associated with the event. Example: </param>
+		public void LogCustomEvent(string eventId, float amount)
+		{
+			if (eventId.Contains("/"))
+			{
+				Debug.LogError("Custom event ids cannot contain front slashes (/)");
+				return;
+			}
+			LogActivity(string.Format("custom/{0}", eventId), amount);
+		}
+
+		/// <summary>
 		/// Gets the variation that corresponds to the given variation name
 		/// WARNING: This function is expensive and is only meant to be used in editor
 		/// </summary>
@@ -168,6 +216,24 @@ namespace Elecular.API
 		}
 		
 		/// <summary>
+		/// Callback that is triggered whenever a new session is created.
+		/// Whenever a new session is created, Elecular gets the most updated variations. Hence, it is recommended to listen to this event and refresh your components.
+		/// It is not necessary but it provides better results.
+		/// 
+		/// All ElecularComponents already listen to this event and update themselves whenever there is a new session created.
+		///
+		/// Variations are usually updated when an experiment starts or stops.
+		/// 1. When an experiment starts, all users are redirected from control group to their designated variations.
+		/// 2. When the experiment stops, all  users are redirected towards the control group.
+		/// If the user never quits his/her game, the user will remain in their old variation and will not be redirected to the correct variation. 
+		/// </summary>
+		/// <param name="onNewSession"></param>
+		public void RegisterOnNewSession(UnityAction<string> onNewSession)
+		{
+			this.onNewSession += onNewSession;
+		}
+		
+		/// <summary>
 		/// Is the API initialized
 		/// </summary>
 		/// <returns></returns>
@@ -190,9 +256,9 @@ namespace Elecular.API
 
 		private void LogActivity(string userAction, float amount, UnityAction onResponse=null)
 		{
-			if (userAction == null)
+			if (userAction == null || userAction.Equals(""))
 			{
-				Debug.LogError("User action cannot be null");
+				Debug.LogError("User action cannot be null or empty");
 				return;
 			}
 

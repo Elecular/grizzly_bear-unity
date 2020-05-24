@@ -13,7 +13,20 @@ namespace Elecular.API
 		[SerializeField]
 		protected Experiment experiment;
 
+		private void Awake()
+		{
+			Setup();
+		}
+
 		private void Start()
+		{
+			ElecularApi.Instance.RegisterOnNewSession(session =>
+			{
+				Setup();
+			});
+		}
+
+		private void Setup()
 		{
 			experiment.GetVariation(variation =>
 			{

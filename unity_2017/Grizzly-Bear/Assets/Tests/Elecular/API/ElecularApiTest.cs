@@ -16,7 +16,7 @@ namespace Tests.Elecular.API
 			var response = 0;
 			ElecularApi.Instance.GetVariation("Experiment 1", variation =>
 			{
-				Assert.AreEqual(variation.Name, "Variation 1");
+				Assert.NotNull(variation.Name);
 				response++;
 			});
 			yield return new WaitUntil(() => response == 1);
@@ -32,7 +32,6 @@ namespace Tests.Elecular.API
 				GameObject.FindObjectOfType<RequestCoroutineManager>() != null &&
 				GameObject.FindObjectOfType<SessionNotifier>() != null
 			);
-			yield return new WaitForSeconds(4);
 		}
 		
 		[UnityTest]
