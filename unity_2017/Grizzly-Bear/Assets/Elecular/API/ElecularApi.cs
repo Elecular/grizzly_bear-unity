@@ -19,7 +19,7 @@ namespace Elecular.API
 		
 		private UserData userData = new UserData();
 
-		private UnityAction<string> onNewSession;
+		private UnityAction onNewSession;
 		
 		private SessionNotifier sessionNotifier;
 
@@ -65,12 +65,12 @@ namespace Elecular.API
 		{
 			if (sessionId != null)
 			{
-				LogCustomEvent("Play time", Time.realtimeSinceStartup - sessionStartTimestamp);
+				LogCustomEvent("Play time (seconds)", Time.realtimeSinceStartup - sessionStartTimestamp);
 				ExperimentsApi.Instance.ClearCache();
 			}
 			sessionId = id;
 			sessionStartTimestamp = Time.realtimeSinceStartup;
-			if (onNewSession != null) onNewSession(sessionId);
+			if (onNewSession != null) onNewSession();
 		}
 		
 		/// <summary>
@@ -217,20 +217,32 @@ namespace Elecular.API
 		
 		/// <summary>
 		/// Callback that is triggered whenever a new session is created.
-		/// Whenever a new session is created, Elecular gets the most updated variations. Hence, it is recommended to listen to this event and refresh your components.
-		/// It is not necessary but it provides better results.
-		/// 
+		/// Whenever a new session is created, Elecular gets the most updated variations. Variations are usually updated when an experiment starts or stops.
+		/// When an experiment starts, all users are redirected from control group to their designated variations.
+		/// When the experiment stops, all  users are redirected from their variations back towards the control group.
+		/// If the user never quits his/her game, the user will remain in their old variation and will not be redirected to the correct variation.
+		///
+		/// Hence, it is recommended to listen to this event and refresh your components. It is not necessary but it provides better results.
 		/// All ElecularComponents already listen to this event and update themselves whenever there is a new session created.
 		///
-		/// Variations are usually updated when an experiment starts or stops.
-		/// 1. When an experiment starts, all users are redirected from control group to their designated variations.
-		/// 2. When the experiment stops, all  users are redirected towards the control group.
-		/// If the user never quits his/her game, the user will remain in their old variation and will not be redirected to the correct variation. 
+		/// Note: There are situations when you register your callback from a Monobehaviour.
+		/// It is recommended to unregister your callback when the Monobehaviour is destroyed. 
 		/// </summary>
 		/// <param name="onNewSession"></param>
-		public void RegisterOnNewSession(UnityAction<string> onNewSession)
+		public void RegisterOnNewSessionEvent(UnityAction onNewSession)
 		{
 			this.onNewSession += onNewSession;
+		}
+		
+		/// <summary>
+		/// Unregisters the callback from getting new session events.
+		/// There are situations when you registered your callback from a Monobehaviour.
+		/// It is recommended to unregister your callback when the Monobehaviour is destroyed. 
+		/// </summary>
+		/// <param name="onNewSession"></param>
+		public void UnRegisterFromNewSessionEvent(UnityAction onNewSession)
+		{
+			this.onNewSession -= onNewSession;
 		}
 		
 		/// <summary>

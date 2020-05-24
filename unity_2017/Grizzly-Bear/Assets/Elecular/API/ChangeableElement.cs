@@ -20,10 +20,12 @@ namespace Elecular.API
 
 		private void Start()
 		{
-			ElecularApi.Instance.RegisterOnNewSession(session =>
-			{
-				Setup();
-			});
+			ElecularApi.Instance.RegisterOnNewSessionEvent(Setup);
+		}
+
+		private void OnDestroy()
+		{
+			ElecularApi.Instance.UnRegisterFromNewSessionEvent(Setup);
 		}
 
 		private void Setup()
