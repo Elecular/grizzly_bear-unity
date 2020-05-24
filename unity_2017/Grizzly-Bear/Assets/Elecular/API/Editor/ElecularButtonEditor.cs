@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Elecular.API
@@ -40,6 +41,18 @@ namespace Elecular.API
 					break;
 			}
 			EditorGUI.indentLevel--;
+		}
+		
+		/// <inheritdoc />
+		protected override void Initialize(SerializedProperty variationConfiguration)
+		{
+			var serializedColorBlock = variationConfiguration.FindPropertyRelative("colorBlock");
+			serializedColorBlock.FindPropertyRelative("m_NormalColor").colorValue = Color.white;
+			serializedColorBlock.FindPropertyRelative("m_HighlightedColor").colorValue = Color.white;
+			serializedColorBlock.FindPropertyRelative("m_PressedColor").colorValue = Color.white;
+			serializedColorBlock.FindPropertyRelative("m_DisabledColor").colorValue = Color.white;
+			serializedColorBlock.FindPropertyRelative("m_ColorMultiplier").floatValue = 1f;
+			serializedColorBlock.FindPropertyRelative("m_FadeDuration").floatValue = 0.1f;
 		}
 	}
 }

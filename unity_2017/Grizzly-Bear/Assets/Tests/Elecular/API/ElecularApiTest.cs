@@ -19,13 +19,20 @@ namespace Tests.Elecular.API
 				Assert.AreEqual(variation.Name, "Variation 1");
 				response++;
 			});
-			ElecularApi.Instance.GetVariation("Experiment 1", variation =>
-			{
-				Assert.AreEqual(variation.Name, "Control Group");
-				response++;
-			}, null, "testUser");
-			yield return new WaitUntil(() => response == 2);
+			yield return new WaitUntil(() => response == 1);
 			Assert.AreEqual(GameObject.FindObjectsOfType<RequestCoroutineManager>().Length, 1);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CreatesNewSessionOnInstantiate()
+		{
+			ElecularApi.Instance.Initialize();
+			yield return new WaitUntil(() => 
+				GameObject.FindObjectOfType<RequestCoroutineManager>() != null &&
+				GameObject.FindObjectOfType<SessionNotifier>() != null
+			);
+			yield return new WaitForSeconds(4);
 		}
 		
 		[UnityTest]

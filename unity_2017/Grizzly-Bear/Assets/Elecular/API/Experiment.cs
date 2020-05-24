@@ -21,12 +21,10 @@ namespace Elecular.API
 		/// </summary>
 		/// <param name="onResponse">Callback that is triggered when a variation is returned</param>
 		/// <param name="onError">Callback that is triggered when there is an error</param>
-		/// <param name="username">By default device id is used (Optional)</param>
 		/// <returns>The variation assigned to this user</returns>
 		public void GetVariation(
 			UnityAction<Variation> onResponse, 
-			UnityAction onError=null, 
-			string username=null
+			UnityAction onError=null
 		)
 		{
 			#if UNITY_EDITOR
@@ -38,7 +36,7 @@ namespace Elecular.API
 				return;
 			}
 			#endif
-			ElecularApi.Instance.GetVariation(experimentName, onResponse, onError, username);
+			ElecularApi.Instance.GetVariation(experimentName, onResponse, onError);
 		}
 		
 		/// <summary>
@@ -47,12 +45,10 @@ namespace Elecular.API
 		/// <param name="settingName">Name of the Setting</param>
 		/// <param name="onResponse">Callback that is triggered when the setting value is returned</param>
 		/// <param name="onError">Callback that is triggered when there is an error</param>
-		/// <param name="username">By default device id is used (Optional)</param>
 		public void GetSetting(
 			string settingName, 
 			UnityAction<string> onResponse,
-			UnityAction onError = null, 
-			string username = null
+			UnityAction onError = null
 		)
 		{
 			GetVariation(variation =>
@@ -67,7 +63,7 @@ namespace Elecular.API
 					return;
 				}
 				onResponse(setting.Value);
-			}, onError, username);
+			}, onError);
 		}
 		
 		/// <summary>

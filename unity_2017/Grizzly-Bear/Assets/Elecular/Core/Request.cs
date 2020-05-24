@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -32,13 +33,36 @@ namespace Elecular.Core
 			{
 				requests[count] = UnityWebRequest.Get(uri);
 			}
+			return ConstructRequest(requests);
+		}
 
+		/// <summary>
+		/// Makes a new Request entity
+		/// </summary>
+		/// <param name="uri"></param>
+		/// <param name="json"></param>
+		/// <returns></returns>
+		public static Request Post(string uri, string json) 
+		{
+			var requests = new UnityWebRequest[NUMBER_OF_RETRIES];
+			for (var count = 0; count < NUMBER_OF_RETRIES; count++)
+			{
+				requests[count] = UnityWebRequest.Post(uri, "POST");
+				requests[count].uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				requests[count].SetRequestHeader("Content-Type", "application/json");
+				requests[count].SetRequestHeader("Accept", "*/*");
+			}
+			return ConstructRequest(requests);
+		}
+
+		private static Request ConstructRequest(UnityWebRequest[] requests)
+		{
+			#if UNITY_EDITOR
 			if (mockRequest != null) //Used for testing	
 			{
 				mockRequest.unityWebRequests = requests;
 				return mockRequest; 
 			}
-			#if UNITY_EDITOR
 			if (!Application.isPlaying)
 			{
 				return new EditorRequest(requests); 
@@ -55,6 +79,7 @@ namespace Elecular.Core
 			{
 				coroutineManager = new GameObject("Elecular - Request Coroutine Manager")
 					.AddComponent<RequestCoroutineManager>();
+				GameObject.DontDestroyOnLoad(coroutineManager.gameObject);
 			}
 			this.unityWebRequests = unityWebRequests;
 		}

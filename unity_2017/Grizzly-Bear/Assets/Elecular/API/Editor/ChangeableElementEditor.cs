@@ -31,8 +31,9 @@ namespace Elecular.API
 			}
 			
 			//Drawing all the variation configurations
+			var element = target as ChangeableElement<T>;
 			var serializedVariations = serializedObject.FindProperty("variations");
-			if (serializedVariations.arraySize == 0)
+			if (serializedVariations.arraySize == 0 && element.Experiment != null)
 			{
 				EditorGUILayout.HelpBox("Could not download experiment data. Please check if your project/experiment id are valid, and click the Reset button to load the variations again", MessageType.Error);
 			}
@@ -84,6 +85,7 @@ namespace Elecular.API
 					serializedVariation
 						.FindPropertyRelative("experimentName")
 						.stringValue = experiment.ExperimentName;
+					Initialize(serializedVariation);
 				}
 				serializedObject.ApplyModifiedProperties();
 			}, () =>
@@ -106,6 +108,14 @@ namespace Elecular.API
 		/// Draws the configuration for the changeable element
 		/// </summary>
 		protected abstract void DrawVariationConfiguration(SerializedProperty variationConfiguration);
+		
+		/// <summary>
+		/// Used for defining default values of the variation configurations
+		/// </summary>
+		/// <param name="variationConfiguration"></param>
+		protected virtual void Initialize(SerializedProperty variationConfiguration)
+		{
+		}
 	}
 }
 

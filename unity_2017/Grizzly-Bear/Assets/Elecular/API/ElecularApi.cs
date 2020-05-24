@@ -11,40 +11,81 @@ namespace Elecular.API
 	/// </summary>
 	public class ElecularApi
 	{
+		private SessionNotifier sessionNotifier;
+		
 		private static ElecularApi instance;
+
+		private UserData userData = new UserData();
+
+		private string environment;
 		
 		private ElecularApi() {}
+
+		/// <summary>
+		/// Call this method to initialize Elecular.
+		/// Call this once in a Start function. Do NOT call this during Awake. 
+		/// </summary>
+		public void Initialize()
+		{
+			sessionNotifier = new GameObject("Session Notifier").AddComponent<SessionNotifier>();
+			GameObject.DontDestroyOnLoad(sessionNotifier.gameObject);
+			sessionNotifier.Register(OnNewSession);
+		}
+		
+		private void OnNewSession(string sessionId)
+		{
+			var session = new UserActivityApi.Session(
+				SystemInfo.deviceUniqueIdentifier,
+				userData.GetAllSegments(),
+				GetEnvironment()
+			);
+			UserActivityApi.Instance.LogSession(
+				ElecularSettings.Instance.ProjectId, 
+				session, 
+				() => {},
+				() =>
+				{
+					Debug.LogError("Error while logging user session. Please check if project id is valid.");
+				}
+			);
+		}
 		
 		/// <summary>
-		/// Gets the Singleton instance of Elecular API
+		/// Used for storing user demographics and custom segments
 		/// </summary>
-		public static ElecularApi Instance
+		public UserData UserData
 		{
-			get { return instance ?? (instance = new ElecularApi()); }
+			get
+			{
+				return userData;
+			}
+		}
+		
+		/// <summary>
+		/// Sets the environment.
+		/// By default it is dev in editor and prod in your shipped game
+		/// </summary>
+		/// <param name="env"></param>
+		public void SetEnvironment(Environment env)
+		{
+			environment = env.GetString();
 		}
 
 		/// <summary>
 		/// Gets the variation that is assigned to the user
-		/// By default, the username is set to the device id. 
 		/// </summary>
 		/// <param name="experimentName">Name of the experiment</param>
 		/// <param name="onResponse">Callback that is triggered when a variation is returned</param>
 		/// <param name="onError">Callback that is triggered when there is an error</param>
-		/// <param name="username">By default device id is used (Optional)</param>
 		/// <returns>The variation assigned to this user</returns>
 		public void GetVariation(
 			string experimentName, 
 			UnityAction<Variation> onResponse, 
-			UnityAction onError=null, 
-			string username=null
+			UnityAction onError=null
 		)
 		{
-			if (username == null)
-			{
-				username = SystemInfo.deviceUniqueIdentifier;
-			}
 			ExperimentsApi.Instance.GetVariation(
-				username, 
+				SystemInfo.deviceUniqueIdentifier, 
 				ElecularSettings.Instance.ProjectId, 
 				experimentName, 
 				onResponse, 
@@ -102,6 +143,23 @@ namespace Elecular.API
 				onResponse, 
 				onError
 			);
+		}
+		
+		/// <summary>
+		/// Gets the Singleton instance of Elecular API
+		/// </summary>
+		public static ElecularApi Instance
+		{
+			get { return instance ?? (instance = new ElecularApi()); }
+		}
+
+		private string GetEnvironment()
+		{
+			if (environment != null)
+			{
+				return environment;
+			}
+			return (Application.isEditor ? Environment.Dev : Environment.Prod).GetString();
 		}
 	}	
 }

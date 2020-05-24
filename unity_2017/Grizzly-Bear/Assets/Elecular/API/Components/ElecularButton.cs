@@ -36,7 +36,7 @@ namespace Elecular.API
 				Debug.LogWarning("ElecularButton only supports buttons with Image as their Target Graphic. Ignore this message if you do not want to change the Target Graphic. If you want to change the Target Grahpic, consider using an Image component or writing a custom script.");
 			}
 		}
-		
+
 		/// <inheritdoc />
 		public override IEnumerable<ButtonVariationConfiguration> Configurations
 		{

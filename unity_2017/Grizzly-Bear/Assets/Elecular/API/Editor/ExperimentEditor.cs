@@ -36,7 +36,7 @@ namespace Elecular.API
 			
 			//Drawing variation dropdown
 			EditorGUILayout.Space();
-			EditorGUILayout.HelpBox("If you want to test your game with a specific variation, you can forcefully set the variation. Forcefully setting the variation will only impact the editor. It will NOT have any impact in the shipped game", MessageType.Info);
+			EditorGUILayout.HelpBox("If you want to test your game with a specific variation, you can forcefully set the variation. This will only impact the editor. It will NOT have any impact in the shipped game", MessageType.Info);
 			var forceSetVariation = EditorGUILayout.Toggle("Set Variation", IsAVariationForced());
 			SetForceVariation(forceSetVariation);
 			
