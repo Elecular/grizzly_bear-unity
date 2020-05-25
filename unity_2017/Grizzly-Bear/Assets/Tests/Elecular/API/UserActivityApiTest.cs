@@ -3,6 +3,7 @@ using Elecular.API;
 using Elecular.Core;
 using NUnit.Framework;
 using Tests.Elecular.Core;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests.Elecular.API
@@ -39,6 +40,12 @@ namespace Tests.Elecular.API
 				"https://user-activity.api.elecular.com/projects/5ec39b16750f8d0012e5c027/user-session"
 			);
 			yield return null;
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+	        Request.SetMockRequest(null);
         }
     }
 }

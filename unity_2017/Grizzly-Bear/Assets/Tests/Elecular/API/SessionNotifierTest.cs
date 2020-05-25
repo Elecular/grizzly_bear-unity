@@ -13,36 +13,74 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CreateNewSessionOnInstantiate()
 		{
-			var res = false;
+			var newSession = 0;
+			var stopSession = 0;
 			var notifier = new GameObject().AddComponent<SessionNotifier>();
-			notifier.Register(() =>
+			notifier.RegisterOnNewSession(() =>
 			{
-				res = true;
+				newSession++;
 			});
-			yield return new WaitUntil(() => res);
+			notifier.RegisterOnSessionStop(() =>
+			{
+				stopSession++;
+			});
+			yield return new WaitForSeconds(4);
+			Assert.AreEqual(newSession, 1);
+			Assert.AreEqual(stopSession, 0);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator StopsSessionOnDestroy()
+		{
+			var newSession = 0;
+			var stopSession = 0;
+			var notifier = new GameObject().AddComponent<SessionNotifier>();
+			notifier.RegisterOnNewSession(() =>
+			{
+				newSession++;
+			});
+			notifier.RegisterOnSessionStop(() =>
+			{
+				stopSession++;
+			});
+			yield return new WaitForSeconds(3);
+			GameObject.Destroy(notifier.gameObject);
+			yield return new WaitForSeconds(3);
+			Assert.AreEqual(newSession, 1);
+			Assert.AreEqual(stopSession, 1);
 		}
 		
 		[UnityTest]
 		[Timeout(15000)]
 		public IEnumerator CreateNewSessionWhenUnFocusAndFocusBack()
 		{
-			var numberOfSessions = 0;
+			var newSession = 0;
+			var stopSession = 0;
 			var notifier = new GameObject().AddComponent<SessionNotifier>();
-			notifier.Register(() =>
+			notifier.RegisterOnNewSession(() =>
 			{
-				numberOfSessions++;
+				newSession++;
+			});
+			notifier.RegisterOnSessionStop(() =>
+			{
+				stopSession++;
 			});
 			
 			notifier.OnApplicationFocus(false);
-			yield return new WaitForSeconds(4);
-			notifier.SetSessionInactiveTimeThreshold(2);
+			yield return new WaitForSeconds(2);
+			notifier.SetSessionInactiveTimeThreshold(1);
 			notifier.OnApplicationFocus(true);
-			yield return new WaitUntil(() => numberOfSessions == 2);
+			yield return new WaitForSeconds(3);
+			Assert.AreEqual(newSession, 2);
+			Assert.AreEqual(stopSession, 1);
 			
 			notifier.OnApplicationFocus(false);
-			yield return new WaitForSeconds(4);
+			yield return new WaitForSeconds(2);
 			notifier.OnApplicationFocus(true);
-			yield return new WaitUntil(() => numberOfSessions == 3);
+			yield return new WaitForSeconds(3);
+			Assert.AreEqual(newSession, 3);
+			Assert.AreEqual(stopSession, 2);
 
 		}
 		
@@ -51,10 +89,15 @@ namespace Tests.Elecular.API
 		public IEnumerator DoesNotCreateNewSessionWhenFocusesBackInTime()
 		{
 			var numberOfSessions = 0;
+			var stopSession = 0;
 			var notifier = new GameObject().AddComponent<SessionNotifier>();
-			notifier.Register(() =>
+			notifier.RegisterOnNewSession(() =>
 			{
 				numberOfSessions++;
+			});
+			notifier.RegisterOnSessionStop(() =>
+			{
+				stopSession++;
 			});
 			
 			notifier.OnApplicationFocus(false);
@@ -62,7 +105,15 @@ namespace Tests.Elecular.API
 			notifier.SetSessionInactiveTimeThreshold(3);
 			notifier.OnApplicationFocus(true);
 			yield return new WaitForSeconds(4);
+			
 			Assert.AreEqual(numberOfSessions, 1);
+			Assert.AreEqual(stopSession, 0);
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
 		}
 	}	
 }

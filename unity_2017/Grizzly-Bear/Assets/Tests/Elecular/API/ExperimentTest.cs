@@ -16,8 +16,7 @@ namespace Tests.Elecular.API
 			ExperimentsApi.Instance.ClearCache();
 			var mockRequest = new MockRequest(
 				mockResponse: @"{
-					""variationName"": ""Variation 1"",
-					""variables"": []
+					""variationName"": ""Variation 1""
 				}"
 			);
 			Request.SetMockRequest(mockRequest);
@@ -259,6 +258,14 @@ namespace Tests.Elecular.API
 				response++;
 			});
 			yield return new WaitUntil(() => response == 1);
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			GameObject.Destroy(GameObject.FindObjectOfType<RequestCoroutineManager>());
+			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
+			Request.SetMockRequest(null);
 		}
 	}
 }

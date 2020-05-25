@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +27,7 @@ namespace Elecular.API
 			image.color = variationConfiguration.Color;
 		}
 
+		/// <inheritdoc />
 		public override IEnumerable<ImageVariationConfiguration> Configurations
 		{
 			get { return variations; }

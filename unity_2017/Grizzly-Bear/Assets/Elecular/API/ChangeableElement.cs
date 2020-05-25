@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Elecular.API
 {
 	/// <summary>
-	/// A Changeable element is a element that can change itself based on a variation.
+	/// 	/// A Changeable element is an element that can change itself based on a variation.
+	/// Example Buttons, Images, Text etc
 	/// </summary>
+	/// <typeparam name="T">VariationConfiguration defines how an element looks like in a given variation.</typeparam>
 	public abstract class ChangeableElement<T> : MonoBehaviour where T: VariationConfiguration
 	{
 		[SerializeField]
@@ -27,7 +28,7 @@ namespace Elecular.API
 		{
 			ElecularApi.Instance.UnRegisterFromNewSessionEvent(Setup);
 		}
-
+		
 		private void Setup()
 		{
 			experiment.GetVariation(variation =>

@@ -11,7 +11,7 @@ namespace Elecular.API
 	/// </summary>
 	public class ElecularApi
 	{
-		private string sessionId = null;
+		private string sessionId;
 
 		private float sessionStartTimestamp;
 		
@@ -21,6 +21,9 @@ namespace Elecular.API
 
 		private UnityAction onNewSession;
 		
+		//This is triggered whenever there is a new activity logged
+		private UnityAction<string> onActivityLog;
+		
 		private SessionNotifier sessionNotifier;
 
 		private static ElecularApi instance;
@@ -28,19 +31,18 @@ namespace Elecular.API
 		private ElecularApi() {}
 
 		/// <summary>
-		/// Call this method to initialize Elecular.
-		/// Call this once in a Start or Awake function.
+		///  Call this method once in a Start or Awake function to initialize Elecular.
 		/// </summary>
 		public void Initialize()
 		{
 			if (sessionNotifier != null)
 			{
-				Debug.LogWarning("Do not call Initialize twice");
+				Debug.LogWarning("Calling Initialize a second time has no effect");
 				return;
 			}
-			sessionNotifier = new GameObject("Elecular - Session Notifier").AddComponent<SessionNotifier>();
-			GameObject.DontDestroyOnLoad(sessionNotifier.gameObject);
-			sessionNotifier.Register(CreateSession);
+			sessionNotifier = new GameObject().AddComponent<SessionNotifier>();
+			sessionNotifier.RegisterOnNewSession(CreateSession);
+			sessionNotifier.RegisterOnSessionStop(OnSessionStop);
 		}
 		
 		private void CreateSession()
@@ -63,14 +65,22 @@ namespace Elecular.API
 
 		private void OnSessionCreated(string id)
 		{
-			if (sessionId != null)
-			{
-				LogCustomEvent("Play time (seconds)", Time.realtimeSinceStartup - sessionStartTimestamp);
-				ExperimentsApi.Instance.ClearCache();
-			}
 			sessionId = id;
 			sessionStartTimestamp = Time.realtimeSinceStartup;
+			if (onActivityLog != null) onActivityLog("New Session");
 			if (onNewSession != null) onNewSession();
+			foreach (var retention in userData.RetentionSegments)
+			{
+				LogActivity(string.Format("{0} Retention", retention), 1, () =>
+				{
+					if (onActivityLog != null) onActivityLog(string.Format("User Retention Logged: {0}", retention));
+				});
+			}
+		}
+
+		private void OnSessionStop()
+		{
+			ExperimentsApi.Instance.ClearCache();
 		}
 		
 		/// <summary>
@@ -125,7 +135,10 @@ namespace Elecular.API
 		{
 			LogActivity("ads/impression", 1, () =>
 			{
-				LogActivity(string.Format("ads/impression/{0}", placementId), 1);
+				LogActivity(string.Format("ads/impression/{0}", placementId), 1, () =>
+				{
+					if (onActivityLog != null) onActivityLog(string.Format("Ad Impression: {0}", placementId));
+				});
 			});
 		}
 		
@@ -138,7 +151,10 @@ namespace Elecular.API
 		{
 			LogActivity("ads/click", 1, () =>
 			{
-				LogActivity(string.Format("ads/click/{0}", placementId), 1);
+				LogActivity(string.Format("ads/click/{0}", placementId), 1, () =>
+				{
+					if (onActivityLog != null) onActivityLog(string.Format("Ad Click: {0}", placementId));
+				});
 			});
 		}
 
@@ -152,7 +168,10 @@ namespace Elecular.API
 		{
 			LogActivity("transactions/complete", price, () =>
 			{
-				LogActivity(string.Format("transactions/complete/{0}", productId), price);
+				LogActivity(string.Format("transactions/complete/{0}", productId), price, () =>
+				{
+					if (onActivityLog != null) onActivityLog(string.Format("Transaction: {0} ({1}$)", productId, price));
+				});
 			});
 		}
 		
@@ -169,7 +188,10 @@ namespace Elecular.API
 				Debug.LogError("Custom event ids cannot contain front slashes (/)");
 				return;
 			}
-			LogActivity(string.Format("custom/{0}", eventId), amount);
+			LogActivity(string.Format("custom/{0}", eventId), amount, () =>
+			{
+				if (onActivityLog != null) onActivityLog(string.Format("Custom Event: {0} ({1})", eventId, amount));
+			});
 		}
 
 		/// <summary>
@@ -246,6 +268,25 @@ namespace Elecular.API
 		}
 		
 		/// <summary>
+		/// Callback is triggered whenever a new user activity is logged.
+		/// This is mainly used by the Debug Window
+		/// </summary>
+		/// <param name="onActivityLog"></param>
+		public void RegisterOnActivityLog(UnityAction<string> onActivityLog)
+		{
+			this.onActivityLog += onActivityLog;
+		}
+		
+		/// <summary>
+		/// Unregisters from activity log
+		/// </summary>
+		/// <param name="onActivityLog"></param>
+		public void UnRegisterFromActivityLog(UnityAction<string> onActivityLog)
+		{
+			this.onActivityLog -= onActivityLog;
+		}
+		
+		/// <summary>
 		/// Is the API initialized
 		/// </summary>
 		/// <returns></returns>
@@ -255,6 +296,20 @@ namespace Elecular.API
 			{
 				return sessionNotifier != null && sessionId != null;
 			}
+		}
+		
+		/// <summary>
+		/// Gets current session id.
+		/// This will be null until Elecular has initialized
+		/// </summary>
+		public string SessionId
+		{
+			get { return sessionId; }
+		}
+
+		public float ElapsedSessionTime
+		{
+			get { return Time.realtimeSinceStartup - sessionStartTimestamp; }
 		}
 
 		private string GetEnvironment()

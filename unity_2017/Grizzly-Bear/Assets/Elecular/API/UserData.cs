@@ -11,6 +11,9 @@ namespace Elecular.API
 	/// </summary>
 	public class UserData
 	{
+		//The key in which the install timestamp is located
+		public const string PlayerPrefsInstallTimestamp = "elecular-install-timestamp";
+		
 		private int[,] ageSplits = {{18, 24},{25, 34},{35, 44},{45, 54},{55, 64}, {65, -1}};
 		
 		private Gender gender = Gender.Unknown;
@@ -20,7 +23,33 @@ namespace Elecular.API
 		private int birthdayYear = int.MaxValue;
 
 		private List<string> customSegments = new List<string>();
+		
+		//Number of days since install
+		private int retention;
 
+		public UserData()
+		{
+			retention = CalculateRetention();
+		}
+		
+		/// <summary>
+		/// Gets the first day of install and calculate the number of days since the first install
+		/// </summary>
+		private int CalculateRetention()
+		{
+			var installTimestamp = PlayerPrefs.GetString(PlayerPrefsInstallTimestamp, "");
+			
+			if (installTimestamp.Equals(""))
+			{
+				installTimestamp = DateTime.UtcNow.Ticks.ToString();
+				PlayerPrefs.SetString(PlayerPrefsInstallTimestamp, installTimestamp);
+				PlayerPrefs.Save();
+			}
+			
+			//Returning number of days since install
+			return (int)((DateTime.UtcNow.Ticks - long.Parse(installTimestamp)) / TimeSpan.TicksPerDay);
+		}
+		
 		/// <summary>
 		/// Sets gender of the user
 		/// If the gender is unknown, simply set it to unknown
@@ -80,10 +109,15 @@ namespace Elecular.API
 			var segments = new List<string>();
 			segments.Add(string.Format("platform/{0}", Application.platform.ToString()));
 			segments.AddRange(customSegments);
+			segments.AddRange(RetentionSegments.Select(
+				segment => string.Format("retention/{0}", segment)
+			));
+
 			if (gender != Gender.Unknown)
 			{
 				segments.Add(string.Format("gender/{0}", gender.ToString()));
 			}
+			
 			if (location != Location.Unknown)
 			{
 				var locationSegment = Regex.Replace(
@@ -93,11 +127,49 @@ namespace Elecular.API
 				); 
 				segments.Add(string.Format("country/{0}", locationSegment)); 
 			}
+			
 			if (AgeSegment != null)
 			{
 				segments.Add(string.Format("age/{0}", AgeSegment));
 			}
+			
 			return segments.ToArray();
+		}
+
+		/// <summary>
+		/// Gets the amount of days this app has been installed for
+		/// </summary>
+		/// <returns></returns>
+		public int Retention
+		{
+			get { return retention; }
+		}
+		
+		/// <summary>
+		/// Retention segments represents the retention of this user
+		/// If a user is at least 1 day old, this will return Day 1
+		/// If a user is at least 7 days old, this will return [Day 1, Day 7]
+		/// If a user is at least 30 days old, this will return [Day 1, Day 7, Day 30]
+		/// </summary>
+		public string[] RetentionSegments
+		{
+			get
+			{
+				var retentionSegments = new List<string>();
+				if (Retention >= 1)
+				{
+					retentionSegments.Add("Day 1");
+				}
+				if (Retention >= 7)
+				{
+					retentionSegments.Add("Day 7");
+				}
+				if (Retention >= 30)
+				{
+					retentionSegments.Add("Day 30");
+				}
+				return retentionSegments.ToArray();
+			}
 		}
 		
 		private string AgeSegment
@@ -121,19 +193,11 @@ namespace Elecular.API
 				return null;
 			}
 		}
-
-		private string Platform
-		{
-			get
-			{
-				return Application.platform.ToString();
-			}
-		}
 	}
 	
 	/// <summary>
 	/// Enum to represent gender.
-	/// If the gender is known, just set to Unknown
+	/// If the gender is unknown, just set to Unknown
 	/// </summary>
 	public enum Gender
 	{

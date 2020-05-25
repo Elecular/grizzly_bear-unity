@@ -18,7 +18,8 @@ namespace Elecular.API
 		[SerializeField] 
 		[HideInInspector]
 		private List<ButtonVariationConfiguration> variations = new List<ButtonVariationConfiguration>();
-		
+
+		/// <inheritdoc />
 		protected override void Setup(ButtonVariationConfiguration variationConfiguration)
 		{
 			var button = GetComponent<Button>();

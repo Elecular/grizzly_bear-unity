@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Elecular.API;
+using UnityEngine;
 
 namespace Tests.Elecular.API
 {
@@ -84,6 +85,72 @@ namespace Tests.Elecular.API
 			data.AddCustomSegments(new List<string>(){"custom1", null, "custom2"});
 			Assert.Contains("custom/custom1", data.GetAllSegments());
 			Assert.Contains("custom/custom2", data.GetAllSegments());
+		}
+		
+		[Test]
+		public void CanNotHaveRetention() {
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, "");
+			var data = new UserData();
+			Assert.Null(data.GetAllSegments().FirstOrDefault(segment => segment.Contains("retention")));
+			
+			var date = DateTime.UtcNow.Subtract(TimeSpan.FromHours(14));
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, date.Ticks.ToString());
+			data = new UserData();
+			Assert.Null(data.GetAllSegments().FirstOrDefault(segment => segment.Contains("retention")));
+
+		}
+		
+		[Test]
+		public void CanHaveDayOneRetention() {
+			var date = DateTime.UtcNow.Subtract(TimeSpan.FromHours(30));
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, date.Ticks.ToString());
+			var data = new UserData();
+			Assert.Contains("retention/Day 1", data.GetAllSegments());
+			Assert.Null(data.GetAllSegments().FirstOrDefault(segment => segment.Equals("retention/Day 7")));
+			
+			date = DateTime.UtcNow.Subtract(TimeSpan.FromDays(3));
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, date.Ticks.ToString());
+			data = new UserData();
+			Assert.Contains("retention/Day 1", data.GetAllSegments());
+			Assert.Null(data.GetAllSegments().FirstOrDefault(segment => segment.Equals("retention/Day 7")));
+		}
+		
+		[Test]
+		public void CanHaveDaySevenRetention() {
+			var date = DateTime.UtcNow.Subtract(TimeSpan.FromDays(8));
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, date.Ticks.ToString());
+			var data = new UserData();
+			Assert.Contains("retention/Day 1", data.GetAllSegments());
+			Assert.Contains("retention/Day 7", data.GetAllSegments());
+			Assert.Null(data.GetAllSegments().FirstOrDefault(segment => segment.Equals("retention/Day 30")));
+		}
+		
+		[Test]
+		public void CanHaveDayThirtyRetention() {
+			var date = DateTime.UtcNow.Subtract(TimeSpan.FromDays(34));
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, date.Ticks.ToString());
+			var data = new UserData();
+			Assert.Contains("retention/Day 1", data.GetAllSegments());
+			Assert.Contains("retention/Day 7", data.GetAllSegments());
+			Assert.Contains("retention/Day 30", data.GetAllSegments());
+		}
+		
+		[Test]
+		public void CalculatesRetentionCorrectly() {
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, "");
+			Assert.AreEqual(new UserData().Retention, 0);
+
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Subtract(TimeSpan.FromHours(13)).Ticks.ToString());
+			Assert.AreEqual(new UserData().Retention, 0);
+			
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Subtract(TimeSpan.FromHours(24)).Ticks.ToString());
+			Assert.AreEqual(new UserData().Retention, 1);
+			
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Subtract(TimeSpan.FromHours(30)).Ticks.ToString());
+			Assert.AreEqual(new UserData().Retention, 1);
+
+			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Subtract(TimeSpan.FromHours(500)).Ticks.ToString());
+			Assert.AreEqual(new UserData().Retention, 20);
 		}
 	}	
 }

@@ -11,11 +11,11 @@ namespace Elecular.API
 	{
 		[SerializeField]
 		[Tooltip("Name of the event")]
-		private string eventName;
+		private string eventId;
 		
 		private void Awake ()
 		{
-			if (eventName == null || eventName.Equals(""))
+			if (eventId == null || eventId.Equals(""))
 			{
 				Debug.LogError("Event name is cannot be null or empty");
 			}
@@ -24,7 +24,7 @@ namespace Elecular.API
 
 		private void OnClick()
 		{
-			ElecularApi.Instance.LogCustomEvent(eventName, 1);
+			ElecularApi.Instance.LogCustomEvent(eventId, 1);
 		}
 	}	
 }

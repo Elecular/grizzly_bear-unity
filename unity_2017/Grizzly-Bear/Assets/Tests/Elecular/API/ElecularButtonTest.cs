@@ -24,7 +24,6 @@ namespace Tests.Elecular.API
 			yield return new WaitUntil(() => button.GetComponent<Button>().transition == Selectable.Transition.SpriteSwap);
 		}
 		
-		//This test is complicated and wierd, I will try to explain in comments what is happening
 		[UnityTest]
 		[Timeout(10000)]
 		public IEnumerator ElecularButtonCanBeUpdated()
@@ -61,11 +60,11 @@ namespace Tests.Elecular.API
 			sessionNotifier.OnApplicationFocus(false);
 			yield return new WaitForSeconds(2);
 			
-			//This is the wierd part
 			//We are mixing up two requests together. We put the sessions data and variation data in one request
 			//This is because Json.FromUtility only picks up variables it is looking for.
 			//So when Elecular API tried to create a new session, it will only pick up the _id field
-			//And when the button tries to get the new variation, it will only pick up the variationName
+			//And after that when the button tries to get the new variation, it will only pick up the variationName
+			//This is hacky, I know!
 			mockRequest = new MockRequest(
 				mockResponse: @"{
 					""_id"": ""session id 2"",
@@ -75,6 +74,14 @@ namespace Tests.Elecular.API
 			Request.SetMockRequest(mockRequest);
 			sessionNotifier.OnApplicationFocus(true);
 			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.SpriteSwap);
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			GameObject.Destroy(GameObject.FindObjectOfType<RequestCoroutineManager>());
+			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
+			Request.SetMockRequest(null);
 		}
 	}
 }

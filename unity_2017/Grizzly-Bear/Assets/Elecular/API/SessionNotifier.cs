@@ -11,26 +11,37 @@ namespace Elecular.API
 	{
 		[NonSerialized] 
 		private float sessionInactiveTimeThreshold;
-		
+
 		/// <summary>
 		/// The last time the game lost focus
 		/// </summary>
 		[NonSerialized]
-		private float focusLostTimestamp;
+		private float focusLostTimestamp = float.MaxValue;
 
 		[NonSerialized] 
 		private UnityAction onNewSession;
+		
+		[NonSerialized]
+		private UnityAction onSessionStop;
 
 		private void Start()
 		{
+			StartNewSession();
 			sessionInactiveTimeThreshold = ElecularSettings.SESSION_INACTIVE_TIME_THRESHOLD;
-			StartNewSession(); 
+			DontDestroyOnLoad(gameObject);
+			gameObject.name = "Elecular - Session Notifier";
+		}
+
+		private void OnDestroy()
+		{
+			StopSession();
 		}
 
 		public void OnApplicationFocus(bool hasFocus)
 		{
 			if (hasFocus && Time.realtimeSinceStartup >= focusLostTimestamp + sessionInactiveTimeThreshold)
 			{
+				StopSession();
 				StartNewSession();
 			}
 			else
@@ -46,14 +57,31 @@ namespace Elecular.API
 				onNewSession();
 			}
 		}
+		
+		private void StopSession()
+		{
+			if (onSessionStop != null)
+			{
+				onSessionStop();
+			}
+		}
 
 		/// <summary>
-		/// The registered callback is triggered whenever there is a new user session created.
+		/// Callback is triggered whenever there is a new user session created.
 		/// </summary>
 		/// <param name="onNewSession"></param>
-		public void Register(UnityAction onNewSession)
+		public void RegisterOnNewSession(UnityAction onNewSession)
 		{
 			this.onNewSession += onNewSession;
+		}
+		
+		/// <summary>
+		/// Callback is triggered whenever the current session stops. 
+		/// </summary>
+		/// <param name="onSessionStop"></param>
+		public void RegisterOnSessionStop(UnityAction onSessionStop)
+		{
+			this.onSessionStop += onSessionStop;
 		}
 		
 		/// <summary>
