@@ -91,14 +91,28 @@ namespace Elecular.API
 		#if UNITY_EDITOR
 		
 		/// <summary>
+		/// Developer can force set a variation to test it.
+		/// </summary>
+		[SerializeField]
+		[HideInInspector]
+		private bool forceVariation;
+		
+		[SerializeField]
+		[HideInInspector]
+		private string[] variations;
+
+		[SerializeField]
+		[HideInInspector]
+		private string selectedVariation;
+		
+		/// <summary>
 		/// If the developer wants to see how his/her mobile game looks like in a certain variation,
 		/// we can force set the variation.
 		/// </summary>
 		/// <returns></returns>
 		private string GetForcedVariation()
 		{
-			var guid = UnityEditor.AssetDatabase.AssetPathToGUID(UnityEditor.AssetDatabase.GetAssetPath(this));
-			return UnityEditor.EditorPrefs.GetString(string.Format("elecular-{0}-selected-variation", guid), "");
+			return !forceVariation ? null : selectedVariation;
 		}
 		
 		#endif

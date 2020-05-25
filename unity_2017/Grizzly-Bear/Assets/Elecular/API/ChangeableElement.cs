@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Elecular.API
 {
 	/// <summary>
-	/// 	/// A Changeable element is an element that can change itself based on a variation.
+	/// A Changeable element is an element that can change itself based on a variation.
 	/// Example Buttons, Images, Text etc
 	/// </summary>
 	/// <typeparam name="T">VariationConfiguration defines how an element looks like in a given variation.</typeparam>

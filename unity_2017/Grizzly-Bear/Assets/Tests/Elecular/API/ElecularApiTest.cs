@@ -52,6 +52,7 @@ namespace Tests.Elecular.API
 			
 			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Subtract(TimeSpan.FromDays(37)).Ticks.ToString());
 			PlayerPrefs.Save();
+			yield return new WaitForSeconds(1);
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
 				if (activity.Equals("User Retention Logged: Day 1"))

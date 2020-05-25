@@ -12,3 +12,9 @@ MonoBehaviour:
   m_Name: Experiment 2
   m_EditorClassIdentifier: 
   experimentName: Experiment 2
+  forceVariation: 0
+  variations:
+  - My Variation 1
+  - My Variation 2
+  - Control Group
+  selectedVariation: 

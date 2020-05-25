@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9052a157d2ca341a28fceb4d59a58022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  experiment: {fileID: 11400000, guid: 0ee430f5535b44b099a673a27dde868e, type: 2}
+  experiment: {fileID: 11400000, guid: 040fcc735ffed41588b95ad596c97ec0, type: 2}
   variations:
   - experimentName: Experiment 1
     variationName: Control Group
@@ -328,7 +328,7 @@ MonoBehaviour:
     transition: 1
     sourceImage: {fileID: 0}
     colorBlock:
-      m_NormalColor: {r: 1, g: 0, b: 0, a: 1}
+      m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
       m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
       m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
       m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
