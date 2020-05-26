@@ -395,10 +395,6 @@ namespace Elecular.API
 				activity,
 				() =>
 				{
-					if (Application.isEditor)
-					{
-						Debug.Log(string.Format("Logged {0}", userAction));
-					}
 					if (onResponse != null) onResponse();
 				}, 
 				() =>

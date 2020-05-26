@@ -29,6 +29,7 @@ namespace Elecular.API
 			{
 				activity.Dequeue();
 			}
+			Debug.Log(userAction);
 		}
 
 		private void OnGUI()
