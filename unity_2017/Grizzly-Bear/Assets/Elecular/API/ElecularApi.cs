@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Elecular.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -16,14 +15,16 @@ namespace Elecular.API
 		private float sessionStartTimestamp;
 		
 		private string environment;
-		
-		private UserData userData = new UserData();
+
+		private UserData userData;
 
 		private UnityAction onNewSession;
 		
 		//This is triggered whenever there is a new activity logged
 		private UnityAction<string> onActivityLog;
 		
+		private bool canUpdateVariationsWhileRunning;
+
 		private SessionNotifier sessionNotifier;
 
 		private static ElecularApi instance;
@@ -32,6 +33,7 @@ namespace Elecular.API
 
 		/// <summary>
 		///  Call this method once in a Start or Awake function to initialize Elecular.
+		/// This method creates a new session in Elecular and caches all the experiment variations to avoid flickering effects
 		/// </summary>
 		public void Initialize()
 		{
@@ -40,6 +42,7 @@ namespace Elecular.API
 				Debug.LogWarning("Calling Initialize a second time has no effect");
 				return;
 			}
+			userData = new UserData();
 			sessionNotifier = new GameObject().AddComponent<SessionNotifier>();
 			sessionNotifier.RegisterOnNewSession(CreateSession);
 			sessionNotifier.RegisterOnSessionStop(OnSessionStop);
@@ -47,6 +50,7 @@ namespace Elecular.API
 		
 		private void CreateSession()
 		{
+			ElecularSettings.Instance.LoadAllExperiments();
 			var session = new UserActivityApi.Session(
 				SystemInfo.deviceUniqueIdentifier,
 				userData.GetAllSegments(),
@@ -71,15 +75,13 @@ namespace Elecular.API
 			if (onNewSession != null) onNewSession();
 			foreach (var retention in userData.RetentionSegments)
 			{
-				LogActivity(string.Format("{0} Retention", retention), 1, () =>
-				{
-					if (onActivityLog != null) onActivityLog(string.Format("User Retention Logged: {0}", retention));
-				});
+				LogCustomEvent(string.Format("{0} Retention", retention), 1);
 			}
 		}
 
 		private void OnSessionStop()
 		{
+			if (!CanUpdateVariationsWhileRunning) return;
 			ExperimentsApi.Instance.ClearCache();
 		}
 		
@@ -239,14 +241,7 @@ namespace Elecular.API
 		
 		/// <summary>
 		/// Callback that is triggered whenever a new session is created.
-		/// Whenever a new session is created, Elecular gets the most updated variations. Variations are usually updated when an experiment starts or stops.
-		/// When an experiment starts, all users are redirected from control group to their designated variations.
-		/// When the experiment stops, all  users are redirected from their variations back towards the control group.
-		/// If the user never quits his/her game, the user will remain in their old variation and will not be redirected to the correct variation.
-		///
-		/// Hence, it is recommended to listen to this event and refresh your components. It is not necessary but it provides better results.
-		/// All ElecularComponents already listen to this event and update themselves whenever there is a new session created.
-		///
+		/// 
 		/// Note: There are situations when you register your callback from a Monobehaviour.
 		/// It is recommended to unregister your callback when the Monobehaviour is destroyed. 
 		/// </summary>
@@ -306,10 +301,30 @@ namespace Elecular.API
 		{
 			get { return sessionId; }
 		}
-
+		
+		/// <summary>
+		/// Amount of time spend in the current session
+		/// </summary>
 		public float ElapsedSessionTime
 		{
 			get { return Time.realtimeSinceStartup - sessionStartTimestamp; }
+		}
+		
+		/// <summary>
+		/// If set to true, Elecular will pull the most updated variations whenever a new session is created
+		/// Variations are usually updated when an experiment starts or stops.
+		/// When an experiment starts, all users are redirected from control group to their designated variations.
+		/// When the experiment stops, all  users are redirected from their variations back towards the control group.
+		/// If the user never quits his/her game, the user will remain in their old variation and will not be redirected to the correct variation.
+		/// Hence, if you want to avoid this situation, set this flag to true. This is not critical, but it does provide more accurate results.
+		///
+		/// You can listen to ElecularApi.Instance.RegisterOnNewSessionEvent to get notified whenever there is a new session and re-fetch the experiment variations/settings if necessary. 
+		/// ElecularComponents automatically update themselves if this field is set to true. 
+		/// </summary>
+		public bool CanUpdateVariationsWhileRunning
+		{
+			get { return canUpdateVariationsWhileRunning; }
+			set { canUpdateVariationsWhileRunning = value; }
 		}
 
 		private string GetEnvironment()
@@ -320,7 +335,14 @@ namespace Elecular.API
 			}
 			return (Application.isEditor ? Environment.Dev : Environment.Prod).GetString();
 		}
-
+		
+		/// <summary>
+		/// Logs a user action.
+		/// Use this instead of directly using UserActivityApi.LogActivity
+		/// </summary>
+		/// <param name="userAction"></param>
+		/// <param name="amount"></param>
+		/// <param name="onResponse"></param>
 		private void LogActivity(string userAction, float amount, UnityAction onResponse=null)
 		{
 			if (userAction == null || userAction.Equals(""))
@@ -341,6 +363,10 @@ namespace Elecular.API
 				activity,
 				() =>
 				{
+					if (Application.isEditor)
+					{
+						Debug.Log(string.Format("Logged {0}", userAction));
+					}
 					if (onResponse != null) onResponse();
 				}, 
 				() =>
@@ -356,6 +382,18 @@ namespace Elecular.API
 		public static ElecularApi Instance
 		{
 			get { return instance ?? (instance = new ElecularApi()); }
+		}
+	
+		/// <summary>
+		/// Removes current state and destroys all spawned objects. Once Reset is called, Elecular will need to be reinitialized again
+		/// Only use for testing
+		/// </summary>
+		public void Reset()
+		{
+			GameObject.Destroy(GameObject.FindObjectOfType<RequestCoroutineManager>());
+			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
+			ExperimentsApi.Instance.ClearCache();
+			instance = new ElecularApi();
 		}
 	}	
 }

@@ -89,7 +89,13 @@ namespace Elecular.API
 		}
 		
 		#if UNITY_EDITOR
-		
+
+		private void OnValidate()
+		{
+			ElecularSettings.Instance.AddExperiment(this);
+			UnityEditor.EditorUtility.SetDirty(ElecularSettings.Instance); 
+		}
+
 		/// <summary>
 		/// Developer can force set a variation to test it.
 		/// </summary>

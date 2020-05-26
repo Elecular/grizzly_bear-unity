@@ -7,8 +7,6 @@ public class ExampleScript : MonoBehaviour {
 	// Use this for initialization
 	void Awake ()
 	{
-		PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Ticks.ToString());
-		PlayerPrefs.Save();
 		ElecularApi.Instance.Initialize();
 	}
 

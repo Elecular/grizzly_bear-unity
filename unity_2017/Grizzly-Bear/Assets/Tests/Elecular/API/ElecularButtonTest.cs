@@ -26,9 +26,9 @@ namespace Tests.Elecular.API
 		
 		[UnityTest]
 		[Timeout(10000)]
-		public IEnumerator ElecularButtonCanBeUpdated()
+		public IEnumerator ElecularButtonCanBeUpdatedIfFlagIsSet()
 		{
-			ExperimentsApi.Instance.ClearCache();
+			ElecularApi.Instance.CanUpdateVariationsWhileRunning = true;
 			//Mocking a variation request to render button under variation 1
 			var mockRequest = new MockRequest(
 				mockResponse: @"{
@@ -76,12 +76,56 @@ namespace Tests.Elecular.API
 			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.SpriteSwap);
 		}
 		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator ElecularButtonCannotBeUpdated()
+		{
+			//Mocking a variation request to render button under variation 1
+			var mockRequest = new MockRequest(
+				mockResponse: @"{
+					""variationName"": ""Variation 1""
+				}"
+			);
+			Request.SetMockRequest(mockRequest);
+			
+			//Loading scene and rendering button
+			yield return SceneManager.LoadSceneAsync("Tests/Elecular/TestScene 1");
+			var button = GameObject.Find("Experiment 1");
+			//Checking if button is rendering variation 1
+			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.ColorTint);
+			
+			//Mocking request for creating new session
+			mockRequest = new MockRequest(
+				mockResponse: @"{
+					""_id"": ""session id""
+				}"
+			);
+			Request.SetMockRequest(mockRequest);
+			//Initializing Elecular API 
+			ElecularApi.Instance.Initialize();
+			
+			//Creating a new session
+			yield return null;
+			var sessionNotifier = GameObject.FindObjectOfType<SessionNotifier>();
+			sessionNotifier.SetSessionInactiveTimeThreshold(1);
+			sessionNotifier.OnApplicationFocus(false);
+			yield return new WaitForSeconds(2);
+			
+			mockRequest = new MockRequest(
+				mockResponse: @"{
+					""_id"": ""session id 2"",
+					""variationName"": ""Control Group""
+				}"
+			);
+			Request.SetMockRequest(mockRequest);
+			sessionNotifier.OnApplicationFocus(true);
+			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.ColorTint);
+		}
+		
 		[TearDown]
 		public void TearDown()
 		{
-			GameObject.Destroy(GameObject.FindObjectOfType<RequestCoroutineManager>());
-			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
-			Request.SetMockRequest(null);
+			ElecularApi.Instance.Reset();
 		}
 	}
 }

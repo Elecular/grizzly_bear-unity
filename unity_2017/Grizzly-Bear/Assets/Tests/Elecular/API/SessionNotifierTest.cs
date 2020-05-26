@@ -113,7 +113,7 @@ namespace Tests.Elecular.API
 		[TearDown]
 		public void TearDown()
 		{
-			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
+			ElecularApi.Instance.Reset();
 		}
 	}	
 }

@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   projectId: 5ec39b16750f8d0012e5c027
-  debugMode: 0
+  experiments:
+  - {fileID: 11400000, guid: 0ee430f5535b44b099a673a27dde868e, type: 2}
+  - {fileID: 11400000, guid: e1f2339aa58004da4a0585025b0b1dfa, type: 2}
+  - {fileID: 11400000, guid: f88f42eab538444879822a6bc0e5f1a1, type: 2}
+  - {fileID: 11400000, guid: 040fcc735ffed41588b95ad596c97ec0, type: 2}
+  - {fileID: 11400000, guid: 88333febed09c42c08a8b79f2b04c0a6, type: 2}
+  - {fileID: 11400000, guid: 2e60a486bfab748edaf89b2a39588198, type: 2}

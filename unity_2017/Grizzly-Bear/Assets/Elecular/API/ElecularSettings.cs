@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Elecular.API
@@ -17,6 +19,9 @@ namespace Elecular.API
 		
 		[SerializeField]
 		private string projectId;
+
+		[SerializeField]
+		private List<Experiment> experiments;
 
 		[NonSerialized]
 		private static ElecularSettings instance;
@@ -45,6 +50,34 @@ namespace Elecular.API
 			{
 				return projectId;
 			}
+		}
+		
+		/// <summary>
+		/// Adds an experiment to ElecularSettings
+		/// If you add an experiment to settings, Elecular will be able to cache the experiment when the app loads.
+		/// This avoids Flickering effects
+		/// </summary>
+		/// <param name="experiment"></param>
+		public void AddExperiment(Experiment experiment)
+		{
+			if (experiments.Contains(experiment)) return;
+			experiments.Add(experiment);
+		}
+
+		/// <summary>
+		/// Loads all experiments and puts the results in cache
+		/// </summary>
+		public void LoadAllExperiments()
+		{
+			foreach (var experiment in experiments)
+			{
+				experiment.GetVariation(variation => {});
+			}
+		}
+		
+		private void OnValidate()
+		{
+			experiments = experiments.FindAll(experiment => experiment != null);
 		}
 	}	
 }

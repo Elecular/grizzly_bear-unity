@@ -21,7 +21,7 @@ namespace Tests.Elecular.API
 				response++;
 			});
 			yield return new WaitUntil(() => response == 1);
-			Assert.AreEqual(GameObject.FindObjectsOfType<RequestCoroutineManager>().Length, 1);
+			Assert.NotNull(GameObject.FindObjectOfType<RequestCoroutineManager>());
 		}
 		
 		[UnityTest]
@@ -52,18 +52,17 @@ namespace Tests.Elecular.API
 			
 			PlayerPrefs.SetString(UserData.PlayerPrefsInstallTimestamp, DateTime.UtcNow.Subtract(TimeSpan.FromDays(37)).Ticks.ToString());
 			PlayerPrefs.Save();
-			yield return new WaitForSeconds(1);
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
-				if (activity.Equals("User Retention Logged: Day 1"))
+				if (activity.Equals("Custom Event: Day 1 Retention (1)"))
 				{
 					day1 = true;
 				}
-				if (activity.Equals("User Retention Logged: Day 7"))
+				if (activity.Equals("Custom Event: Day 7 Retention (1)"))
 				{
 					day7 = true;
 				}
-				if (activity.Equals("User Retention Logged: Day 30"))
+				if (activity.Equals("Custom Event: Day 30 Retention (1)"))
 				{
 					day30 = true;
 				}
@@ -71,6 +70,66 @@ namespace Tests.Elecular.API
 			
 			ElecularApi.Instance.Initialize();
 			yield return new WaitUntil(() => day1 && day7 && day30);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CanLogAdImpression()
+		{
+			var logged = false;
+			
+			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
+			{
+				if (activity.Equals("Ad Impression: video"))
+				{
+					logged = true;	
+				}
+			});
+			
+			ElecularApi.Instance.Initialize();
+			yield return new WaitUntil(() => ElecularApi.Instance.IsInitialized);
+			ElecularApi.Instance.LogAdImpression("video");
+			yield return new WaitUntil(() => logged);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CanLogAdClick()
+		{
+			var logged = false;
+			
+			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
+			{
+				if (activity.Equals("Ad Click: video"))
+				{
+					logged = true;	
+				}
+			});
+			
+			ElecularApi.Instance.Initialize();
+			yield return new WaitUntil(() => ElecularApi.Instance.IsInitialized);
+			ElecularApi.Instance.LogAdClick("video");
+			yield return new WaitUntil(() => logged);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CanLogTransaction()
+		{
+			var logged = false;
+			
+			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
+			{
+				if (activity.Equals("Transaction: item (0.99$)"))
+				{
+					logged = true;	
+				}
+			});
+			
+			ElecularApi.Instance.Initialize();
+			yield return new WaitUntil(() => ElecularApi.Instance.IsInitialized);
+			ElecularApi.Instance.LogTransaction("item", 0.99f);
+			yield return new WaitUntil(() => logged);
 		}
 		
 		[UnityTest]
@@ -94,8 +153,7 @@ namespace Tests.Elecular.API
 		[TearDown]
 		public void TearDown()
 		{
-			GameObject.Destroy(GameObject.FindObjectOfType<RequestCoroutineManager>());
-			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
+			ElecularApi.Instance.Reset();
 		}
 	}
 }
