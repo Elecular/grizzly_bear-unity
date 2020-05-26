@@ -44,6 +44,44 @@ namespace Tests.Elecular.API
 		
 		[UnityTest]
 		[Timeout(10000)]
+		public IEnumerator DoesNotCreateNewSessionWhenOptedOut()
+		{
+			var sessions = 0;
+			ElecularApi.Instance.OptOut = true;
+			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
+			{
+				sessions++;
+			});
+			
+			ElecularApi.Instance.Initialize();
+			yield return new WaitForSeconds(3);
+			Assert.NotNull(GameObject.FindObjectOfType<RequestCoroutineManager>());
+			Assert.NotNull(GameObject.FindObjectOfType<SessionNotifier>());
+			Assert.AreEqual(sessions, 0);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CreateNewSessionWhenOptsBackIn()
+		{
+			var sessions = 0;
+			ElecularApi.Instance.OptOut = true;
+			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
+			{
+				if (!activity.Contains("New Session")) return;
+				sessions++;
+			});
+			
+			ElecularApi.Instance.Initialize();
+			yield return new WaitForSeconds(3);
+			ElecularApi.Instance.OptOut = false;
+			yield return new WaitForSeconds(3);
+			Assert.AreEqual(sessions, 1);
+			Assert.True(ElecularApi.Instance.IsTracking);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
 		public IEnumerator CanLogUserRetention()
 		{
 			var day1 = false;
@@ -54,15 +92,15 @@ namespace Tests.Elecular.API
 			PlayerPrefs.Save();
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
-				if (activity.Equals("Custom Event: Day 1 Retention (1)"))
+				if (activity.Equals("Logged retention: Day 1"))
 				{
 					day1 = true;
 				}
-				if (activity.Equals("Custom Event: Day 7 Retention (1)"))
+				if (activity.Equals("Logged retention: Day 7"))
 				{
 					day7 = true;
 				}
-				if (activity.Equals("Custom Event: Day 30 Retention (1)"))
+				if (activity.Equals("Logged retention: Day 30"))
 				{
 					day30 = true;
 				}
@@ -87,9 +125,31 @@ namespace Tests.Elecular.API
 			});
 			
 			ElecularApi.Instance.Initialize();
-			yield return new WaitUntil(() => ElecularApi.Instance.IsInitialized);
+			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
 			ElecularApi.Instance.LogAdImpression("video");
 			yield return new WaitUntil(() => logged);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CannotLogAdImpressionWhenOptedOut()
+		{
+			var logged = false;
+			
+			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
+			{
+				if (activity.Equals("Ad Impression: video"))
+				{
+					logged = true;	
+				}
+			});
+
+			ElecularApi.Instance.OptOut = true;
+			ElecularApi.Instance.Initialize();
+			yield return new WaitForSeconds(3);
+			ElecularApi.Instance.LogAdImpression("video");
+			yield return new WaitForSeconds(3);
+			Assert.False(logged);
 		}
 		
 		[UnityTest]
@@ -107,7 +167,7 @@ namespace Tests.Elecular.API
 			});
 			
 			ElecularApi.Instance.Initialize();
-			yield return new WaitUntil(() => ElecularApi.Instance.IsInitialized);
+			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
 			ElecularApi.Instance.LogAdClick("video");
 			yield return new WaitUntil(() => logged);
 		}
@@ -127,7 +187,7 @@ namespace Tests.Elecular.API
 			});
 			
 			ElecularApi.Instance.Initialize();
-			yield return new WaitUntil(() => ElecularApi.Instance.IsInitialized);
+			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
 			ElecularApi.Instance.LogTransaction("item", 0.99f);
 			yield return new WaitUntil(() => logged);
 		}

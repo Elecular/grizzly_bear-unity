@@ -71,7 +71,10 @@ namespace Elecular.API
 		{
 			foreach (var experiment in experiments)
 			{
-				experiment.GetVariation(variation => {});
+				if (experiment != null)
+				{
+					experiment.GetVariation(variation => {});	
+				}
 			}
 		}
 		

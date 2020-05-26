@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using Elecular.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,6 +18,8 @@ namespace Elecular.API
 		private string environment;
 
 		private UserData userData;
+
+		private bool optOut;
 
 		private UnityAction onNewSession;
 		
@@ -51,6 +54,7 @@ namespace Elecular.API
 		private void CreateSession()
 		{
 			ElecularSettings.Instance.LoadAllExperiments();
+			if (optOut) return;
 			var session = new UserActivityApi.Session(
 				SystemInfo.deviceUniqueIdentifier,
 				userData.GetAllSegments(),
@@ -75,7 +79,11 @@ namespace Elecular.API
 			if (onNewSession != null) onNewSession();
 			foreach (var retention in userData.RetentionSegments)
 			{
-				LogCustomEvent(string.Format("{0} Retention", retention), 1);
+				var retentionLog = retention;
+				LogActivity(string.Format("retention/{0}", retention), 1, () =>
+				{
+					if(onActivityLog!=null) onActivityLog(string.Format("Logged retention: {0}", retentionLog));
+				});
 			}
 		}
 
@@ -282,14 +290,15 @@ namespace Elecular.API
 		}
 		
 		/// <summary>
-		/// Is the API initialized
+		/// If the API is tracking events
+		/// This is usually false if ElecularApi is not initialized or OptOut is set to true.
 		/// </summary>
 		/// <returns></returns>
-		public bool IsInitialized
+		public bool IsTracking
 		{
 			get
 			{
-				return sessionNotifier != null && sessionId != null;
+				return sessionNotifier != null && sessionId != null && !OptOut;
 			}
 		}
 		
@@ -326,6 +335,24 @@ namespace Elecular.API
 			get { return canUpdateVariationsWhileRunning; }
 			set { canUpdateVariationsWhileRunning = value; }
 		}
+		
+		/// <summary>
+		/// Stops tracking any events. 
+		/// </summary>
+		public bool OptOut
+		{
+			get { return optOut; }
+			set
+			{
+				//If we were opted out but now we are not opted out, we need to create a new session
+				if (sessionNotifier != null && optOut && !value)
+				{
+					optOut = false;
+					CreateSession();
+				}
+				optOut = value;
+			}
+		}
 
 		private string GetEnvironment()
 		{
@@ -351,9 +378,14 @@ namespace Elecular.API
 				return;
 			}
 
-			if (!IsInitialized)
+			if (!IsTracking)
 			{
-				Debug.LogError("Elecular API is not initialized yet");
+				if (OptOut)
+				{
+					Debug.Log("Player has opted out of tracking");
+					return;
+				}
+				Debug.LogError("Elecular API is not initialized");
 				return;
 			}
 			

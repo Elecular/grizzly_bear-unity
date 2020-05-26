@@ -43,7 +43,7 @@ namespace Elecular.API
 		{
 			windowSkin.label.fontStyle = FontStyle.Bold;
 			GUILayout.Space(10);
-			if (ElecularApi.Instance.SessionId != null)
+			if (ElecularApi.Instance.IsTracking)
 			{
 				BoldLabel("Session");
 				Label("Session ID: " + ElecularApi.Instance.SessionId);
@@ -57,7 +57,7 @@ namespace Elecular.API
 			}
 			else
 			{
-				Label("Elecular Api is not initialized");
+				Label("Elecular Api is not initialized.");
 			}
 		}
 

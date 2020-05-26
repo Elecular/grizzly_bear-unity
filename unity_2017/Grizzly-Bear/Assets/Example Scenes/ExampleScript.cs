@@ -7,6 +7,7 @@ public class ExampleScript : MonoBehaviour {
 	// Use this for initialization
 	void Awake ()
 	{
+		ElecularApi.Instance.OptOut = true;
 		ElecularApi.Instance.Initialize();
 	}
 
