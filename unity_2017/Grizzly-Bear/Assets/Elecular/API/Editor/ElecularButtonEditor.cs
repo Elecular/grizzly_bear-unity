@@ -7,6 +7,7 @@ namespace Elecular.API
 	[CustomEditor(typeof(ElecularButton))]
 	public class ElecularButtonEditor : ChangeableElementEditor<ElecularButton.ButtonVariationConfiguration>
 	{
+		/// <inheritdoc />
 		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration)
 		{
 			EditorGUILayout.Space();

@@ -17,9 +17,12 @@ public class ExampleScript : MonoBehaviour {
 
 	public void Log()
 	{
-		ElecularApi.Instance.LogAdImpression("level completion");
-		ElecularApi.Instance.LogAdClick("level completion");
-		ElecularApi.Instance.LogTransaction("level completion", 0.99f);
-		ElecularApi.Instance.LogCustomEvent("level completion", 2);
+		for (int count = 0; count < 100; count++)
+		{
+			ElecularApi.Instance.LogAdImpression("level completion");
+			ElecularApi.Instance.LogAdClick("level completion");
+			ElecularApi.Instance.LogTransaction("level completion", 0.99f);
+			ElecularApi.Instance.LogCustomEvent("level completion", 2);	
+		}
 	}
 }
