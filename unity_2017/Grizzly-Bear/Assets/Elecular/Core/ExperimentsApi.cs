@@ -10,8 +10,12 @@ namespace Elecular.Core
 	public class ExperimentsApi
 	{
 		private const string URI = @"https://experiments.api.elecular.com";
-
+		
+		//This is a cache for storing variations that is assigned to each user
 		private Dictionary<string, Variation> cache = new Dictionary<string, Variation>();
+		
+		//This is a cache for storing all variations of an experiment. This is usually only used in an editor
+		private Dictionary<string, Variation[]> cachedExperiments = new Dictionary<string, Variation[]>();
 
 		private static ExperimentsApi instance;
 
@@ -81,6 +85,11 @@ namespace Elecular.Core
 			UnityAction onError
 		)
 		{
+			if (cachedExperiments.ContainsKey(experimentName))
+			{
+				onResponse(cachedExperiments[experimentName]);
+				return;
+			}
 			var experimentUri = string.Format(
 				"{0}/projects/{1}/experiments/{2}",
 				URI,
@@ -93,6 +102,11 @@ namespace Elecular.Core
 				{
 					if(onError != null) onError();
 					return;
+				} 
+
+				if (!cachedExperiments.ContainsKey(experimentName))
+				{
+					cachedExperiments.Add(experimentName, experiments.array[0].variations);	
 				}
 				onResponse(experiments.array[0].variations);
 			}, onError);

@@ -73,7 +73,11 @@ namespace Elecular.API
 			{
 				if (experiment != null)
 				{
-					experiment.GetVariation(variation => {});	
+					experiment.GetVariation(variation => {});
+					if (Application.isEditor)
+					{
+						experiment.GetAllVariations(variations => {});
+					}
 				}
 			}
 		}
