@@ -188,7 +188,7 @@ namespace Tests.Elecular.API
 			
 			ElecularApi.Instance.Initialize();
 			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
-			ElecularApi.Instance.LogTransaction("item", 0.99f);
+			ElecularApi.Instance.LogTransaction("item", 0.99m);
 			yield return new WaitUntil(() => logged);
 		}
 		

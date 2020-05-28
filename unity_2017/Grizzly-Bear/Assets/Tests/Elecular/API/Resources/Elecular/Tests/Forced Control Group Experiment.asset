@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Forced Control Group Experiment
   m_EditorClassIdentifier: 
   experimentName: Experiment 1
-  forceVariation: 1
+  forceVariation: 0
   variations:
   - Variation 1
   - Control Group

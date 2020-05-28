@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -8,7 +9,7 @@ namespace Elecular.API
     /// Add this component to a MeshRenderer to add variations
     /// </summary>
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(MeshRenderer))]
+    [RequireComponent(typeof(Renderer))]
     public class ElecularMeshRenderer : ChangeableElement<ElecularMeshRenderer.MeshRendererVariationConfiguration> 
     {
         [SerializeField]
@@ -18,7 +19,7 @@ namespace Elecular.API
         /// <inheritdoc />
         protected override void Setup(MeshRendererVariationConfiguration variationConfiguration)
         {
-            var meshRenderer = GetComponent<MeshRenderer>();
+            var meshRenderer = GetComponent<Renderer>();
             meshRenderer.materials = variationConfiguration.materials;
         }
 
@@ -36,6 +37,12 @@ namespace Elecular.API
         {
             [SerializeField] 
             public Material[] materials;
+
+            /// <inheritdoc />
+            public override Object GetTarget(GameObject gameObject)
+            {
+                return gameObject.GetComponent<Renderer>();
+            }
         }
     }	
 }

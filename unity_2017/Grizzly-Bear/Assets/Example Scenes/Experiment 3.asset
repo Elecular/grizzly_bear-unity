@@ -11,9 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76bbf83d2192a44f2892c3dcbbe2c4b4, type: 3}
   m_Name: Experiment 3
   m_EditorClassIdentifier: 
-  experimentName: Experiment 1
+  experimentName: Experiment 3
   forceVariation: 0
   variations:
+  - Variation 5
+  - Variation 4
+  - Variation 3
+  - Variation 2
   - Variation 1
   - Control Group
-  selectedVariation: 
+  selectedVariation: Variation 5

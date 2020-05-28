@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Elecular.API
@@ -16,11 +17,8 @@ namespace Elecular.API
 
 		private void Awake()
 		{
+			OnAwake();
 			Setup();
-		}
-
-		private void Start()
-		{
 			ElecularApi.Instance.RegisterOnNewSessionEvent(Setup);
 		}
 
@@ -46,6 +44,24 @@ namespace Elecular.API
 			});
 		}
 		
+		#if UNITY_EDITOR
+		
+		/// <summary>
+		/// This is used by editor to preview the variation change on the element
+		/// Do not use in production.
+		/// </summary>
+		public void Preview()
+		{
+			experiment.GetVariation(variation =>
+			{
+				var variationConfig = GetConfiguration(variation.Name);
+				Undo.RecordObject(variationConfig.GetTarget(gameObject), "Previewed Variation");
+				Setup(variationConfig);
+			});
+		}
+		
+		#endif
+
 		/// <summary>
 		/// This method sets the element based on the give configuration
 		/// </summary>
@@ -74,6 +90,11 @@ namespace Elecular.API
 		{
 			get { return experiment; }
 		}
+		
+		/// <summary>
+		/// Called on awake. Use this instead of Awake function
+		/// </summary>
+		protected virtual void OnAwake() {}
 	}
 }
 

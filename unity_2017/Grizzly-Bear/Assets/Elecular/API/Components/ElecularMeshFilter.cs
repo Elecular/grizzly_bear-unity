@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -36,6 +37,12 @@ namespace Elecular.API
 		{
 			[SerializeField] 
 			public Mesh mesh;
+
+			/// <inheritdoc />
+			public override Object GetTarget(GameObject gameObject)
+			{
+				return gameObject.GetComponent<MeshFilter>();
+			}
 		}
 	}	
 }

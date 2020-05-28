@@ -58,6 +58,7 @@ namespace Elecular.Core
 			catch (Exception e)
 			{
 				EditorApplication.update -= ProcessRequest;
+				Debug.LogError(e);
 				onWebError();
 			}
 		}

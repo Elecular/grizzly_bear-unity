@@ -1,19 +1,13 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 namespace Elecular.API
 {
     [CustomEditor(typeof(ElecularMeshRenderer))]
     public class ElecularMeshRendererEditor : ChangeableElementEditor<ElecularMeshRenderer.MeshRendererVariationConfiguration> 
     {
-        protected override void DrawVariationConfiguration(SerializedProperty config)
+        protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
         {
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField(
-                config.FindPropertyRelative("variationName").stringValue,
-                EditorStyles.boldLabel
-            );
-            EditorGUI.indentLevel++;
-    
             var materials = config.FindPropertyRelative("materials");
             
             EditorGUILayout.LabelField("Materials");
@@ -26,15 +20,19 @@ namespace Elecular.API
                 EditorGUILayout.PropertyField(material);
             }
             EditorGUI.indentLevel--;
-            
-            EditorGUI.indentLevel--;
         }
         
         /// <inheritdoc />
-        protected override void Initialize(SerializedProperty config)
+        protected override void Initialize(SerializedProperty config, GameObject gameObject)
         {
-            var materials = config.FindPropertyRelative("materials");
-            materials.arraySize = 1;
+            var renderer = gameObject.GetComponent<Renderer>();
+            
+            var serializedMaterials = config.FindPropertyRelative("materials");
+            serializedMaterials.arraySize = renderer.sharedMaterials.Length;
+            for(var count = 0; count < renderer.sharedMaterials.Length; count++)
+            {
+                serializedMaterials.GetArrayElementAtIndex(count).objectReferenceValue = renderer.sharedMaterials[count];
+            }
         }
     }	
 }

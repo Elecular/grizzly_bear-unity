@@ -109,9 +109,9 @@ namespace Elecular.Core
 			private string userAction;
 			
 			[SerializeField]
-			private float amount;
+			private string amount;
 
-			public Activity(string sessionId, string userAction, float amount)
+			public Activity(string sessionId, string userAction, string amount)
 			{
 				this.sessionId = sessionId;
 				this.userAction = userAction;

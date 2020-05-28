@@ -1,19 +1,14 @@
 ﻿using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Elecular.API
 {
 	[CustomEditor(typeof(ElecularImage))]
 	public class ElecularImageEditor : ChangeableElementEditor<ElecularImage.ImageVariationConfiguration> {
 		
-		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration)
+		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject)
 		{
-			EditorGUILayout.Space();
-			EditorGUILayout.LabelField(
-				variationConfiguration.FindPropertyRelative("variationName").stringValue,
-				EditorStyles.boldLabel
-			);
-			EditorGUI.indentLevel++;
-			
 			var serializedSourceImage = variationConfiguration.FindPropertyRelative("sourceImage");
 			EditorGUILayout.PropertyField(serializedSourceImage);
 			
@@ -22,7 +17,14 @@ namespace Elecular.API
 			
 			var serializedMaterial = variationConfiguration.FindPropertyRelative("material");
 			EditorGUILayout.PropertyField(serializedMaterial);
-			EditorGUI.indentLevel--;
+		}
+
+		/// <inheritdoc />
+		protected override void Initialize(SerializedProperty config, GameObject gameObject)
+		{
+			var image = gameObject.GetComponent<Image>();
+			config.FindPropertyRelative("sourceImage").objectReferenceValue = image.sprite;
+			config.FindPropertyRelative("color").colorValue = image.color;
 		}
 	}
 

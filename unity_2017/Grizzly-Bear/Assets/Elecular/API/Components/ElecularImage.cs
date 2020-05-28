@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -58,6 +59,12 @@ namespace Elecular.API
 			public Material Material
 			{
 				get { return material; }
+			}
+
+			/// <inheritdoc />
+			public override Object GetTarget(GameObject gameObject)
+			{
+				return gameObject.GetComponent<Image>();
 			}
 		}
 	}

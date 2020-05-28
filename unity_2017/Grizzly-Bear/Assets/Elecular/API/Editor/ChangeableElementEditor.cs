@@ -1,5 +1,4 @@
 ﻿
-using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -24,9 +23,9 @@ namespace Elecular.API
 			var experimentProperty = serializedObject.FindProperty("experiment");
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.PropertyField(experimentProperty);
-			serializedObject.ApplyModifiedProperties();
 			if (EditorGUI.EndChangeCheck())
 			{
+				serializedObject.ApplyModifiedProperties();
 				UpdateVariationConfigurations();
 			}
 			
@@ -40,7 +39,17 @@ namespace Elecular.API
 			for (var count = 0; count < serializedVariations.arraySize; count++)
 			{
 				var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
-				DrawVariationConfiguration(serializedVariation);
+				
+				EditorGUILayout.Space();
+				EditorGUILayout.LabelField(
+					serializedVariation.FindPropertyRelative("variationName").stringValue,
+					EditorStyles.boldLabel
+				);
+				EditorGUI.indentLevel++;
+				
+				DrawVariationConfiguration(serializedVariation, element.gameObject);
+				
+				EditorGUI.indentLevel--;
 			}
 			
 
@@ -55,6 +64,11 @@ namespace Elecular.API
 					MessageType.Error
 				);
 			}
+
+			if (GUILayout.Button("Preview"))
+			{
+				if(element.Experiment != null) element.Preview();
+			}
 			if (GUILayout.Button("Reset"))
 			{
 				UpdateVariationConfigurations();
@@ -63,7 +77,8 @@ namespace Elecular.API
 
 		private void UpdateVariationConfigurations()
 		{
-			var experiment = ((ChangeableElement<T>) target).Experiment;
+			var element = ((ChangeableElement<T>) target);
+			var experiment = element.Experiment;
 			var serializedVariations = serializedObject.FindProperty("variations");
 	
 			if (experiment == null)
@@ -85,7 +100,7 @@ namespace Elecular.API
 					serializedVariation
 						.FindPropertyRelative("experimentName")
 						.stringValue = experiment.ExperimentName;
-					Initialize(serializedVariation);
+					Initialize(serializedVariation, element.gameObject);
 				}
 				serializedObject.ApplyModifiedProperties();
 			}, () =>
@@ -107,13 +122,13 @@ namespace Elecular.API
 		/// <summary>
 		/// Draws the configuration for the changeable element
 		/// </summary>
-		protected abstract void DrawVariationConfiguration(SerializedProperty variationConfiguration);
+		protected abstract void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject);
 		
 		/// <summary>
 		/// Used for defining default values of the variation configurations
 		/// </summary>
 		/// <param name="variationConfiguration"></param>
-		protected virtual void Initialize(SerializedProperty variationConfiguration)
+		protected virtual void Initialize(SerializedProperty variationConfiguration, GameObject gameObject)
 		{
 		}
 	}

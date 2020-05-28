@@ -121,6 +121,17 @@ namespace Elecular.API
 			return !forceVariation ? null : selectedVariation;
 		}
 		
+		/// <summary>
+		/// Forces the variation of this experiment.
+		/// This should only be used in testing. 
+		/// </summary>
+		/// <param name="variation"></param>
+		public void ForceVariation(string variation)
+		{
+			forceVariation = true;
+			selectedVariation = variation;
+		}
+		
 		#endif
 	}	
 }

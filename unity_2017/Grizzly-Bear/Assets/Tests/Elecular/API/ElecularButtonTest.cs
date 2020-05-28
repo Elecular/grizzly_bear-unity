@@ -17,11 +17,11 @@ namespace Tests.Elecular.API
 		public IEnumerator CanSetVariationOfElecularButton()
 		{
 			yield return SceneManager.LoadSceneAsync("Tests/Elecular/TestScene");
-			var button = GameObject.Find("Forced Control Group Experiment");
-			yield return new WaitUntil(() => button.GetComponent<Button>().transition == Selectable.Transition.ColorTint);
+			var button = GameObject.Find("Button (Control Group)").GetComponent<Button>();
+			yield return new WaitUntil(() => button.transition == Selectable.Transition.ColorTint);
 			
-			button = GameObject.Find("Forced Variation 1 Experiment");
-			yield return new WaitUntil(() => button.GetComponent<Button>().transition == Selectable.Transition.SpriteSwap);
+			button = GameObject.Find("Button (Variation 1)").GetComponent<Button>();
+			yield return new WaitUntil(() => button.transition == Selectable.Transition.SpriteSwap);
 		}
 		
 		[UnityTest]

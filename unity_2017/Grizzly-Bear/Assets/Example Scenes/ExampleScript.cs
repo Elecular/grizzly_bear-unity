@@ -17,12 +17,11 @@ public class ExampleScript : MonoBehaviour {
 
 	public void Log()
 	{
-		for (int count = 0; count < 100; count++)
-		{
+		
 			ElecularApi.Instance.LogAdImpression("level completion");
 			ElecularApi.Instance.LogAdClick("level completion");
-			ElecularApi.Instance.LogTransaction("level completion", 0.99f);
+			ElecularApi.Instance.LogTransaction("level completion", 10000.99999513m);
 			ElecularApi.Instance.LogCustomEvent("level completion", 2);	
-		}
+		
 	}
 }

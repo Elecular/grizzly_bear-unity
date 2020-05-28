@@ -1,22 +1,22 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 namespace Elecular.API
 {
 	[CustomEditor(typeof(ElecularMeshFilter))]
 	public class ElecularMeshFilterEditor : ChangeableElementEditor<ElecularMeshFilter.MeshFilterVariationConfiguration> 
 	{
-		protected override void DrawVariationConfiguration(SerializedProperty config)
+		/// <inheritdoc />
+		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
 		{
-			EditorGUILayout.Space();
-			EditorGUILayout.LabelField(
-				config.FindPropertyRelative("variationName").stringValue,
-				EditorStyles.boldLabel
-			);
-			EditorGUI.indentLevel++;
-			
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("mesh"));
-			
-			EditorGUI.indentLevel--;
+		}
+
+		/// <inheritdoc />
+		protected override void Initialize(SerializedProperty config, GameObject gameObject)
+		{
+			var meshFilter = gameObject.GetComponent<MeshFilter>();
+			config.FindPropertyRelative("mesh").objectReferenceValue = meshFilter.sharedMesh;
 		}
 	}	
 }

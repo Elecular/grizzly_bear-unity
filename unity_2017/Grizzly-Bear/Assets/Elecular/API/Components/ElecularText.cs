@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -57,6 +58,12 @@ namespace Elecular.API
 
 			[SerializeField] 
 			public Color color;
+
+			/// <inheritdoc />
+			public override Object GetTarget(GameObject gameObject)
+			{
+				return gameObject.GetComponent<Text>();
+			}
 		}
 	}	
 }

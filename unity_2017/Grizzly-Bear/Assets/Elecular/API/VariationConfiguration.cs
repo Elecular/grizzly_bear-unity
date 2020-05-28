@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -33,6 +34,13 @@ namespace Elecular.API
 		{
 			get { return experimentName; }
 		}
+		
+		/// <summary>
+		/// Gets the Object that is going to have the variation applied to it
+		/// </summary>
+		/// <param name="gameObject"></param>
+		/// <returns></returns>
+		public abstract Object GetTarget(GameObject gameObject);
 	}	
 }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using Elecular.Core;
 using UnityEngine;
@@ -174,13 +175,13 @@ namespace Elecular.API
 		/// </summary>
 		/// <param name="productId">Product Id of the in-game item. Ex: 100 Gold</param>
 		/// <param name="price">Price of the product</param>
-		public void LogTransaction(string productId, float price)
+		public void LogTransaction(string productId, decimal price)
 		{
 			LogActivity("transactions/complete", price, () =>
 			{
 				LogActivity(string.Format("transactions/complete/{0}", productId), price, () =>
 				{
-					if (onActivityLog != null) onActivityLog(string.Format("Transaction: {0} ({1}$)", productId, price));
+					if (onActivityLog != null) onActivityLog(string.Format("Transaction: {0} ({1}$)", productId, price.ToString()));
 				});
 			});
 		}
@@ -191,7 +192,7 @@ namespace Elecular.API
 		/// </summary>
 		/// <param name="eventId">Name of the event. Example: Level Complete</param>
 		/// <param name="amount">An amount associated with the event. Example: </param>
-		public void LogCustomEvent(string eventId, float amount)
+		public void LogCustomEvent(string eventId, decimal amount)
 		{
 			if (eventId.Contains("/"))
 			{
@@ -370,7 +371,7 @@ namespace Elecular.API
 		/// <param name="userAction"></param>
 		/// <param name="amount"></param>
 		/// <param name="onResponse"></param>
-		private void LogActivity(string userAction, float amount, UnityAction onResponse=null)
+		private void LogActivity(string userAction, decimal amount, UnityAction onResponse=null)
 		{
 			if (userAction == null || userAction.Equals(""))
 			{
@@ -389,7 +390,7 @@ namespace Elecular.API
 				return;
 			}
 			
-			var activity = new UserActivityApi.Activity(sessionId, userAction, amount);
+			var activity = new UserActivityApi.Activity(sessionId, userAction, amount.ToString());
 			UserActivityApi.Instance.LogActivity(
 				ElecularSettings.Instance.ProjectId,
 				activity,

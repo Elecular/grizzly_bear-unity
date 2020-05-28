@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = System.Object;
 
 namespace Elecular.API
 {
@@ -22,15 +23,15 @@ namespace Elecular.API
 		/// <inheritdoc />
 		protected override void Setup(ButtonVariationConfiguration variationConfiguration)
 		{
-			var button = GetComponent<Button>();
-			button.transition = variationConfiguration.Transition;
-			button.colors = variationConfiguration.ColorBlock;
-			button.spriteState = variationConfiguration.SpriteState;
-			button.animationTriggers = variationConfiguration.AnimationTriggers;
+			var button = (Button)variationConfiguration.GetTarget(gameObject);
+			button.transition = variationConfiguration.transition;
+			button.colors = variationConfiguration.colorBlock;
+			button.spriteState = variationConfiguration.spriteState;
+			button.animationTriggers = variationConfiguration.animationTriggers;
 			var graphic = button.targetGraphic as Image;
 			if (graphic != null)
 			{
-				graphic.sprite = variationConfiguration.SourceImage;
+				graphic.sprite = variationConfiguration.sourceImage;
 			}
 			else
 			{
@@ -54,43 +55,24 @@ namespace Elecular.API
 		public class ButtonVariationConfiguration : VariationConfiguration
 		{
 			[SerializeField]
-			private Selectable.Transition transition;
+			public Selectable.Transition transition;
 			
 			[SerializeField]
-			private Sprite sourceImage;
+			public Sprite sourceImage;
 
 			[SerializeField]
-			private ColorBlock colorBlock;
+			public ColorBlock colorBlock;
 
 			[SerializeField]
-			private SpriteState spriteState;
+			public SpriteState spriteState;
 			
 			[SerializeField]
-			private AnimationTriggers animationTriggers;
+			public AnimationTriggers animationTriggers;
 
-			public Selectable.Transition Transition
+			/// <inheritdoc />
+			public override UnityEngine.Object GetTarget(GameObject gameObject)
 			{
-				get { return transition; }
-			}
-			
-			public ColorBlock ColorBlock
-			{
-				get { return colorBlock; }
-			}
-
-			public SpriteState SpriteState
-			{
-				get { return spriteState; }
-			}
-
-			public AnimationTriggers AnimationTriggers
-			{
-				get { return animationTriggers; }
-			}
-
-			public Sprite SourceImage
-			{
-				get { return sourceImage; }
+				return gameObject.GetComponent<Button>();
 			}
 		}
 	}

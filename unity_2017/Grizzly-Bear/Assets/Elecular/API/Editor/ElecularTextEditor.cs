@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Elecular.API
 {
@@ -7,31 +8,23 @@ namespace Elecular.API
 	public class ElecularTextEditor : ChangeableElementEditor<ElecularText.TextVariationConfiguration> 
 	{
 		/// <inheritdoc />
-		protected override void DrawVariationConfiguration(SerializedProperty config)
+		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
 		{
-			EditorGUILayout.Space();
-			EditorGUILayout.LabelField(
-				config.FindPropertyRelative("variationName").stringValue,
-				EditorStyles.boldLabel
-			);
-			EditorGUI.indentLevel++;
-			
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("text"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("font"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("fontStyle"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("fontSize"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("alignment"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("color"));
-
-			EditorGUI.indentLevel--;
 		}
 		
 		/// <inheritdoc />
-		protected override void Initialize(SerializedProperty config)
+		protected override void Initialize(SerializedProperty config, GameObject gameObject)
 		{
-			config.FindPropertyRelative("text").stringValue = "New text";
-			config.FindPropertyRelative("fontSize").intValue = 14;
-			config.FindPropertyRelative("color").colorValue = Color.white;
+			var text = gameObject.GetComponent<Text>();
+			config.FindPropertyRelative("text").stringValue = text.text;
+			config.FindPropertyRelative("fontSize").intValue = text.fontSize;
+			config.FindPropertyRelative("color").colorValue = text.color;
 		}
 	}
 }
