@@ -17,8 +17,17 @@ namespace Elecular.API
 		protected override void Setup(RectTransformVariationConfiguration variationConfiguration)
 		{
 			var rectTransform = GetComponent<RectTransform>();
+			
 			rectTransform.offsetMin = variationConfiguration.offsetMin;
 			rectTransform.offsetMax = variationConfiguration.offsetMax;
+			
+			rectTransform.anchorMin = variationConfiguration.anchorMin;
+			rectTransform.anchorMax = variationConfiguration.anchorMax;
+			
+			rectTransform.pivot = variationConfiguration.pivot;
+			
+			rectTransform.eulerAngles = variationConfiguration.rotation;
+			rectTransform.localScale = variationConfiguration.scale;
 		}
 
 		/// <inheritdoc />
@@ -35,6 +44,21 @@ namespace Elecular.API
 			
 			[SerializeField]
 			public Vector2 offsetMax;
+			
+			[SerializeField] 
+			public Vector2 anchorMin;
+
+			[SerializeField] 
+			public Vector2 anchorMax;
+			
+			[SerializeField] 
+			public Vector2 pivot;
+
+			[SerializeField] 
+			public Vector3 rotation;
+
+			[SerializeField] 
+			public Vector3 scale;
 
 			/// <inheritdoc />
 			public override Object GetTarget(GameObject gameObject)

@@ -36,22 +36,39 @@ namespace Elecular.API
 			{
 				EditorGUILayout.HelpBox("Could not download experiment data. Please check if your project/experiment id are valid, and click the Reset button to load the variations again", MessageType.Error);
 			}
+
+			var preview = false;
+			
 			for (var count = 0; count < serializedVariations.arraySize; count++)
 			{
 				var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
+				var variationName = serializedVariation.FindPropertyRelative("variationName").stringValue;
 				
 				EditorGUILayout.Space();
 				EditorGUILayout.LabelField(
-					serializedVariation.FindPropertyRelative("variationName").stringValue,
+					variationName,
 					EditorStyles.boldLabel
 				);
 				EditorGUI.indentLevel++;
 				
 				DrawVariationConfiguration(serializedVariation, element.gameObject);
 				
+				GUILayout.BeginHorizontal();
+				GUILayout.Space(15 * EditorGUI.indentLevel);
+				if (GUILayout.Button("Preview"))
+				{
+					if(element.Experiment != null)
+					{
+						element.Preview(variationName);
+						preview = true;
+					}
+				}
+				GUILayout.EndHorizontal();
+				
+				EditorGUILayout.Space();
+				EditorGUILayout.Space();
 				EditorGUI.indentLevel--;
 			}
-			
 
 			serializedObject.ApplyModifiedProperties();
 			
@@ -64,14 +81,14 @@ namespace Elecular.API
 					MessageType.Error
 				);
 			}
-
-			if (GUILayout.Button("Preview"))
-			{
-				if(element.Experiment != null) element.Preview();
-			}
+			
 			if (GUILayout.Button("Reset"))
 			{
 				UpdateVariationConfigurations();
+			}
+			if (preview)
+			{
+				AssetDatabase.Refresh();
 			}
 		}
 

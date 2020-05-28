@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace Elecular.API
@@ -50,14 +49,11 @@ namespace Elecular.API
 		/// This is used by editor to preview the variation change on the element
 		/// Do not use in production.
 		/// </summary>
-		public void Preview()
+		public void Preview(string variationName)
 		{
-			experiment.GetVariation(variation =>
-			{
-				var variationConfig = GetConfiguration(variation.Name);
-				Undo.RecordObject(variationConfig.GetTarget(gameObject), "Previewed Variation");
-				Setup(variationConfig);
-			});
+			var variationConfig = GetConfiguration(variationName);
+			UnityEditor.Undo.RecordObject(variationConfig.GetTarget(gameObject), "Previewed Variation");
+			Setup(variationConfig);
 		}
 		
 		#endif

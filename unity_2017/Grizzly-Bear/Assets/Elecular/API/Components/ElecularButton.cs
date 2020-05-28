@@ -28,6 +28,7 @@ namespace Elecular.API
 			button.colors = variationConfiguration.colorBlock;
 			button.spriteState = variationConfiguration.spriteState;
 			button.animationTriggers = variationConfiguration.animationTriggers;
+
 			var graphic = button.targetGraphic as Image;
 			if (graphic != null)
 			{

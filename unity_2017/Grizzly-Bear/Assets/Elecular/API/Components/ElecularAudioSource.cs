@@ -22,6 +22,7 @@ namespace Elecular.API
 		protected override void OnAwake()
 		{
 			var audioSource = GetComponent<AudioSource>();
+			//We stop the audio from playing now because will will play it after the setup is complete
 			if(audioSource.playOnAwake)
 				audioSource.Stop();
 		}

@@ -19,7 +19,7 @@ namespace Tests.Elecular
 			yield return new WaitUntil(() => audioSource.clip != null);
 			Assert.AreApproximatelyEqual(audioSource.volume, 0.5f);
 			Assert.AreApproximatelyEqual(audioSource.pitch, 0.43f);
-			Assert.IsTrue(audioSource.isPlaying);
+			yield return new WaitUntil(() => audioSource.isPlaying);
 		}
 		
 		[UnityTest]
