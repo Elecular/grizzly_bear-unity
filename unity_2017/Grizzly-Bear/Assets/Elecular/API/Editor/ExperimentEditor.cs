@@ -59,6 +59,7 @@ namespace Elecular.API
 		private void UpdateAllVariations()
 		{
 			var experiment = (Experiment)target;
+			if (experiment.ExperimentName == null || experiment.ExperimentName.Equals("")) return;
 			experiment.GetAllVariations(variations =>
 			{
 				SetVariations(variations.Select(variation => variation.Name).ToArray());

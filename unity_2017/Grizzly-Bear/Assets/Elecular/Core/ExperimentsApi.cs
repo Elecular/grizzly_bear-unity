@@ -85,7 +85,7 @@ namespace Elecular.Core
 			UnityAction onError
 		)
 		{
-			if (cachedExperiments.ContainsKey(experimentName))
+			if (experimentName != null && !experimentName.Equals("") && cachedExperiments.ContainsKey(experimentName))
 			{
 				onResponse(cachedExperiments[experimentName]);
 				return;

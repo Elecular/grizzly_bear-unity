@@ -40,7 +40,25 @@ namespace Elecular.API
 		/// </summary>
 		/// <param name="gameObject"></param>
 		/// <returns></returns>
-		public abstract Object GetTarget(GameObject gameObject);
+		public abstract Component GetTarget(GameObject gameObject);
+		
+		/// <summary>
+		/// Disables the Target component.
+		/// </summary>
+		/// <param name="gameObject"></param>
+		public abstract void DisableTarget(GameObject gameObject);
+		
+		/// <summary>
+		/// Enables the Target component
+		/// </summary>
+		/// <param name="gameObject"></param>
+		public abstract void EnableTarget(GameObject gameObject);
+		
+		/// <summary>
+		/// Sets up the target so that it represents this variation
+		/// </summary>
+		/// <param name="gameObject"></param>
+		public abstract void SetupTarget(GameObject gameObject);
 	}	
 }
 

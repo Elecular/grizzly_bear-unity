@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -10,23 +10,16 @@ namespace Elecular.API
 	/// </summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(MeshFilter))]
-	public class ElecularMeshFilter : ChangeableElement<ElecularMeshFilter.MeshFilterVariationConfiguration> 
+	public class ElecularMeshFilter : ChangeableElement 
 	{
 		[SerializeField]
 		[HideInInspector]
 		private List<MeshFilterVariationConfiguration> variations;
 
 		/// <inheritdoc />
-		protected override void Setup(MeshFilterVariationConfiguration variationConfiguration)
+		public override IEnumerable<VariationConfiguration> Configurations
 		{
-			var meshFilter = GetComponent<MeshFilter>();
-			meshFilter.mesh = variationConfiguration.mesh;
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<MeshFilterVariationConfiguration> Configurations
-		{
-			get { return variations; }
+			get { return variations.Cast<VariationConfiguration>(); }
 		}
 		
 		/// <summary>
@@ -36,12 +29,31 @@ namespace Elecular.API
 		public class MeshFilterVariationConfiguration : VariationConfiguration
 		{
 			[SerializeField] 
-			public Mesh mesh;
+			private Mesh mesh;
 
 			/// <inheritdoc />
-			public override Object GetTarget(GameObject gameObject)
+			public override Component GetTarget(GameObject gameObject)
 			{
 				return gameObject.GetComponent<MeshFilter>();
+			}
+			
+			/// <inheritdoc />
+			public override void DisableTarget(GameObject gameObject)
+			{
+				
+			}
+
+			/// <inheritdoc />
+			public override void EnableTarget(GameObject gameObject)
+			{
+				
+			}
+
+			/// <inheritdoc />
+			public override void SetupTarget(GameObject gameObject)
+			{
+				var meshFilter = gameObject.GetComponent<MeshFilter>();
+				meshFilter.mesh = mesh;
 			}
 		}
 	}	

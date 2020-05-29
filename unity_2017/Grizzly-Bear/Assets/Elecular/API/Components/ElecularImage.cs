@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -11,7 +11,7 @@ namespace Elecular.API
 	/// </summary>
 	[RequireComponent(typeof(Image))]
 	[DisallowMultipleComponent]
-	public class ElecularImage : ChangeableElement<ElecularImage.ImageVariationConfiguration> 
+	public class ElecularImage : ChangeableElement 
 	{
 		/// <summary>
 		/// This is a list of variation configurations that define how the image will look like in each variation
@@ -20,18 +20,10 @@ namespace Elecular.API
 		[HideInInspector]
 		private List<ImageVariationConfiguration> variations = new List<ImageVariationConfiguration>();
 
-		protected override void Setup(ImageVariationConfiguration variationConfiguration)
-		{
-			var image = GetComponent<Image>();
-			image.sprite = variationConfiguration.SourceImage;
-			image.material = variationConfiguration.Material;
-			image.color = variationConfiguration.Color;
-		}
-
 		/// <inheritdoc />
-		public override IEnumerable<ImageVariationConfiguration> Configurations
+		public override IEnumerable<VariationConfiguration> Configurations
 		{
-			get { return variations; }
+			get { return variations.Cast<VariationConfiguration>(); }
 		}
 		
 		/// <summary>
@@ -45,26 +37,32 @@ namespace Elecular.API
 			[SerializeField] private Color color;
 
 			[SerializeField] private Material material;
+
+			/// <inheritdoc />
+			public override Component GetTarget(GameObject gameObject)
+			{
+				return gameObject.GetComponent<Image>();
+			}
 			
-			public Sprite SourceImage
+			/// <inheritdoc />
+			public override void DisableTarget(GameObject gameObject)
 			{
-				get { return sourceImage; }
-			}
-
-			public Color Color
-			{
-				get { return color; }
-			}
-
-			public Material Material
-			{
-				get { return material; }
+				((Image) GetTarget(gameObject)).enabled = false;
 			}
 
 			/// <inheritdoc />
-			public override Object GetTarget(GameObject gameObject)
+			public override void EnableTarget(GameObject gameObject)
 			{
-				return gameObject.GetComponent<Image>();
+				((Image) GetTarget(gameObject)).enabled = true;
+			}
+
+			/// <inheritdoc />
+			public override void SetupTarget(GameObject gameObject)
+			{
+				var image = gameObject.GetComponent<Image>();
+				image.sprite = sourceImage;
+				image.material = material;
+				image.color = color;
 			}
 		}
 	}

@@ -28,6 +28,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CreatesNewSessionOnInitialize()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var sessions = 0;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
@@ -46,6 +47,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator DoesNotCreateNewSessionWhenOptedOut()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var sessions = 0;
 			ElecularApi.Instance.OptOut = true;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -64,6 +66,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CreateNewSessionWhenOptsBackIn()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var sessions = 0;
 			ElecularApi.Instance.OptOut = true;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -84,6 +87,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogUserRetention()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var day1 = false;
 			var day7 = false;
 			var day30 = false;
@@ -114,6 +118,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogAdImpression()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var logged = false;
 			
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -134,6 +139,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CannotLogAdImpressionWhenOptedOut()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var logged = false;
 			
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -156,6 +162,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogAdClick()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var logged = false;
 			
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -176,6 +183,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogTransaction()
 		{
+			LogAssert.ignoreFailingMessages = true;
 			var logged = false;
 			
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>

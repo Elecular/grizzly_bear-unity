@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = System.Object;
 
 namespace Elecular.API
 {
@@ -11,7 +11,7 @@ namespace Elecular.API
 	/// </summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Button))]
-	public class ElecularButton : ChangeableElement<ElecularButton.ButtonVariationConfiguration>
+	public class ElecularButton : ChangeableElement
 	{
 		/// <summary>
 		/// This is a list of variation configurations that define how the button will look like in each variation
@@ -21,31 +21,11 @@ namespace Elecular.API
 		private List<ButtonVariationConfiguration> variations = new List<ButtonVariationConfiguration>();
 
 		/// <inheritdoc />
-		protected override void Setup(ButtonVariationConfiguration variationConfiguration)
-		{
-			var button = (Button)variationConfiguration.GetTarget(gameObject);
-			button.transition = variationConfiguration.transition;
-			button.colors = variationConfiguration.colorBlock;
-			button.spriteState = variationConfiguration.spriteState;
-			button.animationTriggers = variationConfiguration.animationTriggers;
-
-			var graphic = button.targetGraphic as Image;
-			if (graphic != null)
-			{
-				graphic.sprite = variationConfiguration.sourceImage;
-			}
-			else
-			{
-				Debug.LogWarning("ElecularButton only supports buttons with Image as their Target Graphic. Ignore this message if you do not want to change the Target Graphic. If you want to change the Target Grahpic, consider using an Image component or writing a custom script.");
-			}
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<ButtonVariationConfiguration> Configurations
+		public override IEnumerable<VariationConfiguration> Configurations
 		{
 			get
 			{
-				return variations;
+				return variations.Cast<VariationConfiguration>();
 			}
 		}
 
@@ -56,24 +36,56 @@ namespace Elecular.API
 		public class ButtonVariationConfiguration : VariationConfiguration
 		{
 			[SerializeField]
-			public Selectable.Transition transition;
+			private Selectable.Transition transition;
 			
 			[SerializeField]
-			public Sprite sourceImage;
+			private Sprite sourceImage;
 
 			[SerializeField]
-			public ColorBlock colorBlock;
+			private ColorBlock colorBlock;
 
 			[SerializeField]
-			public SpriteState spriteState;
+			private SpriteState spriteState;
 			
 			[SerializeField]
-			public AnimationTriggers animationTriggers;
+			private AnimationTriggers animationTriggers;
 
 			/// <inheritdoc />
-			public override UnityEngine.Object GetTarget(GameObject gameObject)
+			public override Component GetTarget(GameObject gameObject)
 			{
 				return gameObject.GetComponent<Button>();
+			}
+
+			/// <inheritdoc />
+			public override void DisableTarget(GameObject gameObject)
+			{
+				((Button) GetTarget(gameObject)).enabled = false;
+			}
+
+			/// <inheritdoc />
+			public override void EnableTarget(GameObject gameObject)
+			{
+				((Button) GetTarget(gameObject)).enabled = true;
+			}
+
+			/// <inheritdoc />
+			public override void SetupTarget(GameObject gameObject)
+			{
+				var button = (Button)GetTarget(gameObject);
+				button.transition = transition;
+				button.colors = colorBlock;
+				button.spriteState = spriteState;
+				button.animationTriggers = animationTriggers;
+
+				var graphic = button.targetGraphic as Image;
+				if (graphic != null)
+				{
+					graphic.sprite = sourceImage;
+				}
+				else
+				{
+					Debug.LogWarning("ElecularButton only supports buttons with Image as their Target Graphic. Ignore this message if you do not want to change the Target Graphic. If you want to change the Target Grahpic, consider using an Image component or writing a custom script.");
+				}
 			}
 		}
 	}

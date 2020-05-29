@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Elecular.api;
 using UnityEngine;
 
 namespace Elecular.API
@@ -8,8 +9,7 @@ namespace Elecular.API
 	/// A Changeable element is an element that can change itself based on a variation.
 	/// Example Buttons, Images, Text etc
 	/// </summary>
-	/// <typeparam name="T">VariationConfiguration defines how an element looks like in a given variation.</typeparam>
-	public abstract class ChangeableElement<T> : MonoBehaviour where T: VariationConfiguration
+	public abstract class ChangeableElement : MonoBehaviour
 	{
 		[SerializeField]
 		protected Experiment experiment;
@@ -36,37 +36,19 @@ namespace Elecular.API
 					Debug.LogError(string.Format("Could not set variation for button: {0}. Please check the ElecularButton Component.", name));
 					return;
 				}
-				Setup(variationConfig);
+				variationConfig.DisableTarget(gameObject);
+				variationConfig.SetupTarget(gameObject);
+				variationConfig.EnableTarget(gameObject);
 			}, () =>
 			{
 				Debug.LogError(string.Format("Could not set variation for button: {0}. Please check the ElecularButton Component.", name));
 			});
 		}
-		
-		#if UNITY_EDITOR
-		
-		/// <summary>
-		/// This is used by editor to preview the variation change on the element
-		/// Do not use in production.
-		/// </summary>
-		public void Preview(string variationName)
-		{
-			var variationConfig = GetConfiguration(variationName);
-			UnityEditor.Undo.RecordObject(variationConfig.GetTarget(gameObject), "Previewed Variation");
-			Setup(variationConfig);
-		}
-		
-		#endif
 
-		/// <summary>
-		/// This method sets the element based on the give configuration
-		/// </summary>
-		protected abstract void Setup(T variationConfiguration);
-		
 		/// <summary>
 		/// The variation configurations for this changeable element
 		/// </summary>
-		public abstract IEnumerable<T> Configurations { get; }
+		public abstract IEnumerable<VariationConfiguration> Configurations { get; }
 		
 		/// <summary>
 		/// Finds the configuration of given variation.
@@ -74,7 +56,7 @@ namespace Elecular.API
 		/// </summary>
 		/// <param name="variationName"></param>
 		/// <returns></returns>
-		private T GetConfiguration(string variationName)
+		private VariationConfiguration GetConfiguration(string variationName)
 		{
 			return Configurations.FirstOrDefault(variation => variation.VariationName.Equals(variationName));
 		}
@@ -91,6 +73,23 @@ namespace Elecular.API
 		/// Called on awake. Use this instead of Awake function
 		/// </summary>
 		protected virtual void OnAwake() {}
+		
+#if UNITY_EDITOR
+		
+		/// <summary>
+		/// This is used by editor to preview the variation change on the element
+		/// Do not use in production.
+		/// </summary>
+		public void Preview(string variationName)
+		{
+			var variationConfig = GetConfiguration(variationName);
+			UnityEditor.Undo.RecordObject(variationConfig.GetTarget(gameObject), "Previewed Variation");
+			variationConfig.DisableTarget(gameObject);
+			variationConfig.SetupTarget(gameObject);
+			variationConfig.EnableTarget(gameObject);
+		}
+
+#endif
 	}
 }
 

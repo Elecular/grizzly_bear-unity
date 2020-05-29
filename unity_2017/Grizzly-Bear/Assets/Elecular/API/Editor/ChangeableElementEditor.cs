@@ -13,7 +13,7 @@ namespace Elecular.API
 	{
 		public override void OnInspectorGUI()
 		{
-			if (!(target is ChangeableElement<T>))
+			if (!(target is ChangeableElement))
 			{
 				EditorGUILayout.HelpBox("Target for a ChangeableElementEditor must be an Changeable Element", MessageType.Error);
 				return;
@@ -28,73 +28,60 @@ namespace Elecular.API
 				serializedObject.ApplyModifiedProperties();
 				UpdateVariationConfigurations();
 			}
-			
-			//Drawing all the variation configurations
-			var element = target as ChangeableElement<T>;
-			var serializedVariations = serializedObject.FindProperty("variations");
-			if (serializedVariations.arraySize == 0 && element.Experiment != null)
-			{
-				EditorGUILayout.HelpBox("Could not download experiment data. Please check if your project/experiment id are valid, and click the Reset button to load the variations again", MessageType.Error);
-			}
 
-			var preview = false;
-			
-			for (var count = 0; count < serializedVariations.arraySize; count++)
-			{
-				var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
-				var variationName = serializedVariation.FindPropertyRelative("variationName").stringValue;
-				
-				EditorGUILayout.Space();
-				EditorGUILayout.LabelField(
-					variationName,
-					EditorStyles.boldLabel
-				);
-				EditorGUI.indentLevel++;
-				
-				DrawVariationConfiguration(serializedVariation, element.gameObject);
-				
-				GUILayout.BeginHorizontal();
-				GUILayout.Space(15 * EditorGUI.indentLevel);
-				if (GUILayout.Button("Preview"))
-				{
-					if(element.Experiment != null)
-					{
-						element.Preview(variationName);
-						preview = true;
-					}
-				}
-				GUILayout.EndHorizontal();
-				
-				EditorGUILayout.Space();
-				EditorGUILayout.Space();
-				EditorGUI.indentLevel--;
-			}
-
-			serializedObject.ApplyModifiedProperties();
+			var hasExperimentNameChanged = HasExperimentNameChanged();
 			
 			//Reset button to reload all configurations
 			EditorGUILayout.Space();
-			if (HasExperimentNameChanged())
+			if (hasExperimentNameChanged)
 			{
 				EditorGUILayout.HelpBox(
 					"It looks like you have changed the experiment name. Can you please click the Reset button to update the variations.", 
 					MessageType.Error
 				);
 			}
+
+			if (!hasExperimentNameChanged)
+			{
+				//Drawing all the variation configurations
+				var element = target as ChangeableElement;
+				var serializedVariations = serializedObject.FindProperty("variations");
+				if (serializedVariations.arraySize == 0 && element.Experiment != null)
+				{
+					EditorGUILayout.HelpBox("Could not download experiment data. Please check if your project/experiment id are valid, and click the Reset button to load the variations again", MessageType.Error);
+				}
 			
+				for (var count = 0; count < serializedVariations.arraySize; count++)
+				{
+					var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
+					var variationName = serializedVariation.FindPropertyRelative("variationName").stringValue;
+				
+					EditorGUILayout.Space();
+					EditorGUILayout.LabelField(
+						variationName,
+						EditorStyles.boldLabel
+					);
+					EditorGUI.indentLevel++;
+				
+					DrawVariationConfiguration(serializedVariation, element.gameObject);
+
+					EditorGUILayout.Space();
+					EditorGUILayout.Space();
+					EditorGUI.indentLevel--;
+				}	
+			}
+
+			serializedObject.ApplyModifiedProperties();
+
 			if (GUILayout.Button("Reset"))
 			{
 				UpdateVariationConfigurations();
-			}
-			if (preview)
-			{
-				AssetDatabase.Refresh();
 			}
 		}
 
 		private void UpdateVariationConfigurations()
 		{
-			var element = ((ChangeableElement<T>) target);
+			var element = ((ChangeableElement) target);
 			var experiment = element.Experiment;
 			var serializedVariations = serializedObject.FindProperty("variations");
 	
@@ -129,7 +116,7 @@ namespace Elecular.API
 		
 		private bool HasExperimentNameChanged()
 		{
-			var element = (ChangeableElement<T>) target;
+			var element = (ChangeableElement) target;
 			if (element.Experiment == null) return false;
 			var experimentName = element.Experiment.ExperimentName;
 			var variations = element.Configurations;

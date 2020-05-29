@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -10,14 +10,11 @@ namespace Elecular.API
 	/// </summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(AudioSource))]
-	public class ElecularAudioSource : ChangeableElement<ElecularAudioSource.AudioVariationConfiguration>
+	public class ElecularAudioSource : ChangeableElement
 	{
 		[SerializeField]
 		[HideInInspector]
 		private List<AudioVariationConfiguration> variations;
-
-		[NonSerialized]
-		private bool played = false;
 
 		protected override void OnAwake()
 		{
@@ -28,27 +25,9 @@ namespace Elecular.API
 		}
 
 		/// <inheritdoc />
-		protected override void Setup(AudioVariationConfiguration variationConfiguration)
+		public override IEnumerable<VariationConfiguration> Configurations
 		{
-			var audioSource = GetComponent<AudioSource>();
-			audioSource.clip = variationConfiguration.audioClip;
-			audioSource.pitch = variationConfiguration.pitch;
-			audioSource.volume = variationConfiguration.volume;
-			audioSource.playOnAwake = variationConfiguration.playOnAwake;
-			if (!played && variationConfiguration.playOnAwake)
-			{
-				audioSource.Play();
-				if (Application.isPlaying)
-				{
-					played = true;	
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<AudioVariationConfiguration> Configurations
-		{
-			get { return variations; }
+			get { return variations.Cast<VariationConfiguration>(); }
 		}
 		
 		/// <summary>
@@ -58,21 +37,54 @@ namespace Elecular.API
 		public class AudioVariationConfiguration : VariationConfiguration
 		{
 			[SerializeField]
-			public AudioClip audioClip;
+			private AudioClip audioClip;
 			
 			[SerializeField]
-			public float volume;
+			private float volume;
 			
 			[SerializeField]
-			public float pitch;
+			private float pitch;
 			
 			[SerializeField] 
-			public bool playOnAwake;
+			private bool playOnAwake;
+			
+			[NonSerialized]
+			private bool played;
 
 			/// <inheritdoc />
-			public override Object GetTarget(GameObject gameObject)
+			public override Component GetTarget(GameObject gameObject)
 			{
 				return gameObject.GetComponent<AudioSource>();
+			}
+
+			/// <inheritdoc />
+			public override void DisableTarget(GameObject gameObject)
+			{
+				((AudioSource) GetTarget(gameObject)).enabled = false;
+			}
+
+			/// <inheritdoc />
+			public override void EnableTarget(GameObject gameObject)
+			{
+				((AudioSource) GetTarget(gameObject)).enabled = true;
+			}
+
+			/// <inheritdoc />
+			public override void SetupTarget(GameObject gameObject)
+			{
+				var audioSource = gameObject.GetComponent<AudioSource>();
+				audioSource.clip = audioClip;
+				audioSource.pitch = pitch;
+				audioSource.volume = volume;
+				audioSource.playOnAwake = playOnAwake;
+				if (!played && playOnAwake)
+				{
+					audioSource.Play();
+					if (Application.isPlaying)
+					{
+						played = true;	
+					}
+				}
 			}
 		}
 	}	

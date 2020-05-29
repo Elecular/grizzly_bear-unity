@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,25 +11,16 @@ namespace Elecular.API
 	/// </summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Transform))]
-	public class ElecularTransform : ChangeableElement<ElecularTransform.TransformVariationConfiguration>
+	public class ElecularTransform : ChangeableElement
 	{
 		[SerializeField]
 		[HideInInspector]
 		private List<TransformVariationConfiguration> variations;
 
 		/// <inheritdoc />
-		protected override void Setup(TransformVariationConfiguration variationConfiguration)
+		public override IEnumerable<VariationConfiguration> Configurations
 		{
-			var transform = GetComponent<Transform>();
-			transform.position = variationConfiguration.position;
-			transform.eulerAngles = variationConfiguration.rotation;
-			transform.localScale = variationConfiguration.scale;
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<TransformVariationConfiguration> Configurations
-		{
-			get { return variations; }
+			get { return variations.Cast<VariationConfiguration>(); }
 		}
 		
 		/// <summary>
@@ -38,18 +30,39 @@ namespace Elecular.API
 		public class TransformVariationConfiguration : VariationConfiguration
 		{
 			[SerializeField]
-			public Vector3 position;
+			private Vector3 position;
 			
 			[SerializeField]
-			public Vector3 rotation;
+			private Vector3 rotation;
 			
 			[SerializeField]
-			public Vector3 scale;
+			private Vector3 scale;
 
 			/// <inheritdoc />
-			public override Object GetTarget(GameObject gameObject)
+			public override Component GetTarget(GameObject gameObject)
 			{
 				return gameObject.GetComponent<Transform>();
+			}
+			
+			/// <inheritdoc />
+			public override void DisableTarget(GameObject gameObject)
+			{
+				
+			}
+
+			/// <inheritdoc />
+			public override void EnableTarget(GameObject gameObject)
+			{
+				
+			}
+
+			/// <inheritdoc />
+			public override void SetupTarget(GameObject gameObject)
+			{
+				var transform = gameObject.GetComponent<Transform>();
+				transform.position = position;
+				transform.eulerAngles = rotation;
+				transform.localScale = scale;
 			}
 		}
 	}

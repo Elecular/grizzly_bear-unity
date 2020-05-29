@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -11,28 +11,16 @@ namespace Elecular.API
 	/// </summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Text))]
-	public class ElecularText : ChangeableElement<ElecularText.TextVariationConfiguration>
+	public class ElecularText : ChangeableElement
 	{
 		[HideInInspector]
 		[SerializeField]
 		private List<TextVariationConfiguration> variations;
 
 		/// <inheritdoc />
-		protected override void Setup(TextVariationConfiguration variationConfiguration)
+		public override IEnumerable<VariationConfiguration> Configurations
 		{
-			var text = GetComponent<Text>();
-			text.font = variationConfiguration.font;
-			text.text = variationConfiguration.text;
-			text.fontStyle = variationConfiguration.fontStyle;
-			text.fontSize = variationConfiguration.fontSize;
-			text.alignment = variationConfiguration.alignment;
-			text.color = variationConfiguration.color;
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<ElecularText.TextVariationConfiguration> Configurations
-		{
-			get { return variations; }
+			get { return variations.Cast<VariationConfiguration>(); }
 		}
 		
 		/// <summary>
@@ -42,27 +30,51 @@ namespace Elecular.API
 		public class TextVariationConfiguration : VariationConfiguration
 		{
 			[SerializeField] 
-			public string text;
+			private string text;
 
 			[SerializeField] 
-			public Font font;
+			private Font font;
 			
 			[SerializeField] 
-			public FontStyle fontStyle;
+			private FontStyle fontStyle;
 
 			[SerializeField] 
-			public int fontSize;
+			private int fontSize;
 
 			[SerializeField] 
-			public TextAnchor alignment;
+			private TextAnchor alignment;
 
 			[SerializeField] 
-			public Color color;
+			private Color color;
 
 			/// <inheritdoc />
-			public override Object GetTarget(GameObject gameObject)
+			public override Component GetTarget(GameObject gameObject)
 			{
 				return gameObject.GetComponent<Text>();
+			}
+			
+			/// <inheritdoc />
+			public override void DisableTarget(GameObject gameObject)
+			{
+				((Text) GetTarget(gameObject)).enabled = false;
+			}
+
+			/// <inheritdoc />
+			public override void EnableTarget(GameObject gameObject)
+			{
+				((Text) GetTarget(gameObject)).enabled = true;
+			}
+
+			/// <inheritdoc />
+			public override void SetupTarget(GameObject gameObject)
+			{
+				var textComponent = gameObject.GetComponent<Text>();
+				textComponent.font = font;
+				textComponent.text = text;
+				textComponent.fontStyle = fontStyle;
+				textComponent.fontSize = fontSize;
+				textComponent.alignment = alignment;
+				textComponent.color = color;
 			}
 		}
 	}	

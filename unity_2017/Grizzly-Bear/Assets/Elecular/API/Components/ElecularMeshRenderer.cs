@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -10,23 +10,16 @@ namespace Elecular.API
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Renderer))]
-    public class ElecularMeshRenderer : ChangeableElement<ElecularMeshRenderer.MeshRendererVariationConfiguration> 
+    public class ElecularMeshRenderer : ChangeableElement
     {
         [SerializeField]
         [HideInInspector]
         private List<MeshRendererVariationConfiguration> variations;
 
         /// <inheritdoc />
-        protected override void Setup(MeshRendererVariationConfiguration variationConfiguration)
+        public override IEnumerable<VariationConfiguration> Configurations
         {
-            var meshRenderer = GetComponent<Renderer>();
-            meshRenderer.materials = variationConfiguration.materials;
-        }
-
-        /// <inheritdoc />
-        public override IEnumerable<MeshRendererVariationConfiguration> Configurations
-        {
-            get { return variations; }
+            get { return variations.Cast<VariationConfiguration>(); }
         }
 		
         /// <summary>
@@ -36,12 +29,30 @@ namespace Elecular.API
         public class MeshRendererVariationConfiguration : VariationConfiguration
         {
             [SerializeField] 
-            public Material[] materials;
+            private Material[] materials;
 
             /// <inheritdoc />
-            public override Object GetTarget(GameObject gameObject)
+            public override Component GetTarget(GameObject gameObject)
             {
                 return gameObject.GetComponent<Renderer>();
+            }
+            
+            /// <inheritdoc />
+            public override void DisableTarget(GameObject gameObject)
+            {
+                ((Renderer) GetTarget(gameObject)).enabled = false;
+            }
+
+            /// <inheritdoc />
+            public override void EnableTarget(GameObject gameObject)
+            {
+                ((Renderer) GetTarget(gameObject)).enabled = true;
+            }
+
+            public override void SetupTarget(GameObject gameObject)
+            {
+                var meshRenderer = gameObject.GetComponent<Renderer>();
+                meshRenderer.materials = materials;
             }
         }
     }	
