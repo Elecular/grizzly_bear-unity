@@ -11,6 +11,8 @@ namespace Elecular.API
 	/// </summary>
 	public abstract class ChangeableElementEditor<T> : Editor where T : VariationConfiguration
 	{
+		private string activeVariation;
+		
 		public override void OnInspectorGUI()
 		{
 			if (!(target is ChangeableElement))
@@ -50,16 +52,19 @@ namespace Elecular.API
 				{
 					EditorGUILayout.HelpBox("Could not download experiment data. Please check if your project/experiment id are valid, and click the Reset button to load the variations again", MessageType.Error);
 				}
+				
+				UpdateActiveVariation();
 			
 				for (var count = 0; count < serializedVariations.arraySize; count++)
 				{
 					var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
 					var variationName = serializedVariation.FindPropertyRelative("variationName").stringValue;
-				
+					var assigned = variationName.Equals(activeVariation);
+					
 					EditorGUILayout.Space();
 					EditorGUILayout.LabelField(
-						variationName,
-						EditorStyles.boldLabel
+						variationName + (assigned ? " (Assigned)" : ""),
+						assigned ? EditorStyles.boldLabel : EditorStyles.label
 					);
 					EditorGUI.indentLevel++;
 				
@@ -111,6 +116,24 @@ namespace Elecular.API
 			{
 				serializedVariations.ClearArray();
 				serializedObject.ApplyModifiedProperties();
+			});
+		}
+
+		private void UpdateActiveVariation()
+		{
+			var element = ((ChangeableElement) target);
+			var experiment = element.Experiment;
+
+			if (experiment == null)
+			{
+				activeVariation = "";
+				return;
+			}
+			
+			experiment.GetVariation(variation =>
+			{
+				activeVariation = variation.Name;
+				Repaint();
 			});
 		}
 		

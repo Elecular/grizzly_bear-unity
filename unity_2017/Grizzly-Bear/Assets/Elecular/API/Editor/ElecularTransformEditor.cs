@@ -17,8 +17,8 @@ namespace Elecular.API
 		protected override void Initialize(SerializedProperty config, GameObject gameObject)
 		{
 			var transform = gameObject.GetComponent<Transform>();
-			config.FindPropertyRelative("position").vector3Value = transform.position;
-			config.FindPropertyRelative("rotation").vector3Value = transform.eulerAngles;
+			config.FindPropertyRelative("position").vector3Value = transform.localPosition;
+			config.FindPropertyRelative("rotation").vector3Value = transform.localEulerAngles;
 			config.FindPropertyRelative("scale").vector3Value = transform.localScale;
 		}
 	}	

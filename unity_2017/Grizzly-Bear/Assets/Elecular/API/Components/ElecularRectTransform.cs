@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Elecular.API
 {
@@ -74,7 +73,7 @@ namespace Elecular.API
 			
 				rectTransform.pivot = pivot;
 			
-				rectTransform.eulerAngles = rotation;
+				rectTransform.localEulerAngles = rotation;
 				rectTransform.localScale = scale;
 			}
 		}

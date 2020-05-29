@@ -40,7 +40,7 @@ namespace Elecular.API
 			
 				config.FindPropertyRelative("pivot").vector2Value = transform.pivot;
 
-				config.FindPropertyRelative("rotation").vector3Value = transform.eulerAngles;
+				config.FindPropertyRelative("rotation").vector3Value = transform.localEulerAngles;
 				config.FindPropertyRelative("scale").vector3Value = transform.localScale;
 			}
 			GUILayout.EndHorizontal();
@@ -57,7 +57,7 @@ namespace Elecular.API
 			
 			variationConfiguration.FindPropertyRelative("pivot").vector2Value = rectTransform.pivot;
 
-			variationConfiguration.FindPropertyRelative("rotation").vector3Value = rectTransform.eulerAngles;
+			variationConfiguration.FindPropertyRelative("rotation").vector3Value = rectTransform.localEulerAngles;
 			variationConfiguration.FindPropertyRelative("scale").vector3Value = rectTransform.localScale;
 		}
 	}	

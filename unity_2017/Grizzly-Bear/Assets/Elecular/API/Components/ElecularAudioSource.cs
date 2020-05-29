@@ -60,13 +60,13 @@ namespace Elecular.API
 			/// <inheritdoc />
 			public override void DisableTarget(GameObject gameObject)
 			{
-				((AudioSource) GetTarget(gameObject)).enabled = false;
+				
 			}
 
 			/// <inheritdoc />
 			public override void EnableTarget(GameObject gameObject)
 			{
-				((AudioSource) GetTarget(gameObject)).enabled = true;
+				
 			}
 
 			/// <inheritdoc />

@@ -60,8 +60,8 @@ namespace Elecular.API
 			public override void SetupTarget(GameObject gameObject)
 			{
 				var transform = gameObject.GetComponent<Transform>();
-				transform.position = position;
-				transform.eulerAngles = rotation;
+				transform.localPosition = position;
+				transform.localEulerAngles = rotation;
 				transform.localScale = scale;
 			}
 		}

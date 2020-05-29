@@ -44,12 +44,18 @@ namespace Elecular.API
 		
 		/// <summary>
 		/// Disables the Target component.
+		/// This is called before SetupTarget.
+		/// It used for refreshing the target. This variation first disables the target, calls setup and then enables it back again.
+		/// If the target does not need refreshing to reflect new changes, leave this method empty
 		/// </summary>
 		/// <param name="gameObject"></param>
 		public abstract void DisableTarget(GameObject gameObject);
 		
 		/// <summary>
 		/// Enables the Target component
+		/// This is called after SetupTarget.
+		/// It used for refreshing the target. This variation first disables the target, calls setup and then enables it back again.
+		/// If the target does not need refreshing to reflect new changes, leave this method empty
 		/// </summary>
 		/// <param name="gameObject"></param>
 		public abstract void EnableTarget(GameObject gameObject);

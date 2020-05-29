@@ -23,7 +23,10 @@ namespace Elecular.API
 		{
 			var text = gameObject.GetComponent<Text>();
 			config.FindPropertyRelative("text").stringValue = text.text;
+			config.FindPropertyRelative("font").objectReferenceValue = text.font;
+			config.FindPropertyRelative("fontStyle").enumValueIndex = (int) text.fontStyle;
 			config.FindPropertyRelative("fontSize").intValue = text.fontSize;
+			config.FindPropertyRelative("alignment").enumValueIndex = (int) text.alignment;
 			config.FindPropertyRelative("color").colorValue = text.color;
 		}
 	}
