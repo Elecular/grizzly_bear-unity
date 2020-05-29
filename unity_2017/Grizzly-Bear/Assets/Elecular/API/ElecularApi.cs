@@ -383,7 +383,7 @@ namespace Elecular.API
 			{
 				if (OptOut)
 				{
-					Debug.Log("Player has opted out of tracking");
+					if (onActivityLog != null) onActivityLog("Player has opted out of tracking");
 					return;
 				}
 				Debug.LogError("Elecular API is not initialized");

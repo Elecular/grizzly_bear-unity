@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Elecular.Core
@@ -119,7 +120,7 @@ namespace Elecular.Core
 		[Serializable]
 		private class Experiments
 		{
-			public Experiment[] array;
+			public Experiment[] array = null;
 		}
 		
 		/// <summary>
@@ -129,7 +130,7 @@ namespace Elecular.Core
 		[Serializable]
 		private class Experiment
 		{
-			public Variation[] variations;
+			public Variation[] variations = null;
 		}
 	}	
 }

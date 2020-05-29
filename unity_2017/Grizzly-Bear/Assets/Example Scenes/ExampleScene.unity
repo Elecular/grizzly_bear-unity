@@ -501,7 +501,7 @@ Prefab:
     - target: {fileID: 224962419337871628, guid: d776c0571f0d743b7bf9f8c25423ba64,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 280
       objectReference: {fileID: 0}
     - target: {fileID: 224962419337871628, guid: d776c0571f0d743b7bf9f8c25423ba64,
         type: 2}
@@ -551,12 +551,12 @@ Prefab:
     - target: {fileID: 114250091538154320, guid: d776c0571f0d743b7bf9f8c25423ba64,
         type: 2}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.07947665
       objectReference: {fileID: 0}
     - target: {fileID: 114250091538154320, guid: d776c0571f0d743b7bf9f8c25423ba64,
         type: 2}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.07947665
       objectReference: {fileID: 0}
     - target: {fileID: 114250091538154320, guid: d776c0571f0d743b7bf9f8c25423ba64,
         type: 2}
@@ -577,6 +577,26 @@ Prefab:
         type: 2}
       propertyPath: m_Text
       value: Hello world
+      objectReference: {fileID: 0}
+    - target: {fileID: 114876770522719150, guid: d776c0571f0d743b7bf9f8c25423ba64,
+        type: 2}
+      propertyPath: variations.Array.data[1].color.r
+      value: 0.25735295
+      objectReference: {fileID: 0}
+    - target: {fileID: 114876770522719150, guid: d776c0571f0d743b7bf9f8c25423ba64,
+        type: 2}
+      propertyPath: variations.Array.data[1].color.g
+      value: 0.07947665
+      objectReference: {fileID: 0}
+    - target: {fileID: 114876770522719150, guid: d776c0571f0d743b7bf9f8c25423ba64,
+        type: 2}
+      propertyPath: variations.Array.data[1].color.b
+      value: 0.07947665
+      objectReference: {fileID: 0}
+    - target: {fileID: 114250091538154320, guid: d776c0571f0d743b7bf9f8c25423ba64,
+        type: 2}
+      propertyPath: m_Color.r
+      value: 0.25735295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d776c0571f0d743b7bf9f8c25423ba64, type: 2}
@@ -967,15 +987,15 @@ RectTransform:
   m_GameObject: {fileID: 854547420}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 304770917}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.1661076, y: 0.30800003}
   m_AnchorMax: {x: 0.50611246, y: 0.669}
-  m_AnchoredPosition: {x: -0.6799927, y: 0}
-  m_SizeDelta: {x: -25.96, y: -25.96}
+  m_AnchoredPosition: {x: -0.000030517578, y: -0.0000076293945}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &854547422
 MonoBehaviour:
@@ -1052,7 +1072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08a8d76a391f744fe975c4cc78c3d496, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  experiment: {fileID: 11400000, guid: 040fcc735ffed41588b95ad596c97ec0, type: 2}
+  experiment: {fileID: 11400000, guid: 0ee430f5535b44b099a673a27dde868e, type: 2}
   variations:
   - experimentName: Experiment 1
     variationName: Control Group
@@ -1062,7 +1082,7 @@ MonoBehaviour:
   - experimentName: Experiment 1
     variationName: Variation 1
     sourceImage: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
-    color: {r: 1, g: 0.13235295, b: 0.13235295, a: 1}
+    color: {r: 0.10380621, g: 0.9411765, b: 0.3521298, a: 1}
     material: {fileID: 0}
 --- !u!114 &854547426
 MonoBehaviour:
