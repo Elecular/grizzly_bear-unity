@@ -2,8 +2,12 @@
 using Elecular.API;
 using UnityEngine;
 
-public class ExampleScript : MonoBehaviour {
+public class ExampleScript : MonoBehaviour
+{
 
+	[SerializeField] 
+	private Experiment experiment;
+	
 	// Use this for initialization
 	void Awake ()
 	{

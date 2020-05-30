@@ -94,10 +94,12 @@ namespace Elecular.API
 				}
 			}
 		}
-
+		
+#if UNITY_EDITOR
 		private void OnValidate()
 		{
 			experiments = experiments.FindAll(experiment => experiment != null);
 		}
+#endif
 	}	
 }

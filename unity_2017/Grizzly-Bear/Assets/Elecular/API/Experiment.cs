@@ -14,6 +14,17 @@ namespace Elecular.API
 	{
 		[SerializeField]
 		private string experimentName;
+		
+		/// <summary>
+		/// Developer can force set a variation to test it.
+		/// </summary>
+		[SerializeField]
+		[HideInInspector]
+		private bool forceVariation;
+
+		[SerializeField]
+		[HideInInspector]
+		private string selectedVariation;
 
 		/// <summary>
 		/// Gets the variation that is assigned to the user
@@ -27,15 +38,18 @@ namespace Elecular.API
 			UnityAction onError=null
 		)
 		{
-			#if UNITY_EDITOR
 			//If the developer forcefully sets a variation for testing
 			var forcedVariation = GetForcedVariation();
 			if (forcedVariation != null && !forcedVariation.Equals(""))
 			{
+				Debug.LogWarning(string.Format(
+					"You are setting {0} on {1}", 
+					forcedVariation,
+					experimentName
+				));
 				ElecularApi.Instance.GetVariation(experimentName, forcedVariation, onResponse, onError);
 				return;
 			}
-			#endif
 			ElecularApi.Instance.GetVariation(experimentName, onResponse, onError);
 		}
 		
@@ -88,29 +102,6 @@ namespace Elecular.API
 			get { return experimentName; }
 		}
 		
-		#if UNITY_EDITOR
-
-		private void OnValidate()
-		{
-			ElecularSettings.Instance.AddExperiment(this);
-			UnityEditor.EditorUtility.SetDirty(ElecularSettings.Instance); 
-		}
-
-		/// <summary>
-		/// Developer can force set a variation to test it.
-		/// </summary>
-		[SerializeField]
-		[HideInInspector]
-		private bool forceVariation;
-		
-		[SerializeField]
-		[HideInInspector]
-		private string[] variations;
-
-		[SerializeField]
-		[HideInInspector]
-		private string selectedVariation;
-		
 		/// <summary>
 		/// If the developer wants to see how his/her mobile game looks like in a certain variation,
 		/// we can force set the variation.
@@ -120,16 +111,13 @@ namespace Elecular.API
 		{
 			return !forceVariation ? null : selectedVariation;
 		}
-		
-		/// <summary>
-		/// Forces the variation of this experiment.
-		/// This should only be used in testing. 
-		/// </summary>
-		/// <param name="variation"></param>
-		public void ForceVariation(string variation)
+
+		#if UNITY_EDITOR
+
+		private void OnValidate()
 		{
-			forceVariation = true;
-			selectedVariation = variation;
+			ElecularSettings.Instance.AddExperiment(this);
+			UnityEditor.EditorUtility.SetDirty(ElecularSettings.Instance); 
 		}
 		
 		#endif
