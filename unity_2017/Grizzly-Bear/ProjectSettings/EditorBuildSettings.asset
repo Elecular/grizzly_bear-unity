@@ -11,3 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Tests/Elecular/TestScene 1.unity
     guid: a8bd108f80914498db7610784fd932c5
+  - enabled: 1
+    path: Assets/Tests/Elecular/Audio TestScene.unity
+    guid: 049e2be9b2e904199968b7fc4c37faf0
+  - enabled: 1
+    path: Assets/Tests/Elecular/Button TestScene.unity
+    guid: d28ffd0af54914dc6a20a2208dc79806
+  - enabled: 1
+    path: Assets/Tests/Elecular/Button TestScene 2.unity
+    guid: a8bd108f80914498db7610784fd932c5

@@ -13,7 +13,6 @@ namespace Tests.Elecular.API
 		[Test]
 		public void CanGetVariationOfExperiment()
 		{
-			ExperimentsApi.Instance.ClearCache();
 			var mockRequest = new MockRequest(
 				mockResponse: @"{
 					""variationName"": ""Variation 1""
@@ -39,7 +38,6 @@ namespace Tests.Elecular.API
 		[Test]
 		public void CannotGetVariationWithInvalidExperiment()
 		{
-			ExperimentsApi.Instance.ClearCache();
 			var mockRequest = new MockRequest(null);
 			Request.SetMockRequest(mockRequest);
 

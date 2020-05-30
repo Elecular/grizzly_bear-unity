@@ -19,14 +19,18 @@ namespace Elecular.API
 		private UserData userData;
 
 		private bool optOut;
+		
+		private bool canUpdateVariationsWhileRunning;
 
+		//Called when new session is going to be created
 		private UnityAction onNewSession;
+		
+		//Called whenever the API is initialized
+		private UnityAction onInitialized;
 		
 		//This is triggered whenever there is a new activity logged
 		private UnityAction<string> onActivityLog;
 		
-		private bool canUpdateVariationsWhileRunning;
-
 		private SessionNotifier sessionNotifier;
 
 		private static ElecularApi instance;
@@ -34,17 +38,25 @@ namespace Elecular.API
 		private ElecularApi() {}
 
 		/// <summary>
-		///  Call this method once in a Start or Awake function to initialize Elecular.
+		/// Call this method once in a Start or Awake function to initialize Elecular.
 		/// This method creates a new session in Elecular and caches all the experiment variations to avoid flickering effects
 		/// </summary>
-		public void Initialize()
+		/// <param name="onInitialized">This callback is triggered when the API is initialized</param>
+		public void Initialize(UnityAction onInitialized = null)
 		{
 			if (sessionNotifier != null)
 			{
 				Debug.LogWarning("Calling Initialize a second time has no effect");
 				return;
 			}
+
+			if (onInitialized == null)
+			{
+				onInitialized = () => {};
+			}
+			
 			userData = new UserData();
+			this.onInitialized = onInitialized;
 			sessionNotifier = new GameObject().AddComponent<SessionNotifier>();
 			sessionNotifier.RegisterOnNewSession(CreateSession);
 			sessionNotifier.RegisterOnSessionStop(OnSessionStop);
@@ -52,22 +64,33 @@ namespace Elecular.API
 		
 		private void CreateSession()
 		{
-			ElecularSettings.Instance.LoadAllExperiments();
-			if (optOut) return;
-			var session = new UserActivityApi.Session(
-				SystemInfo.deviceUniqueIdentifier,
-				userData.GetAllSegments(),
-				GetEnvironment()
-			);
-			UserActivityApi.Instance.LogSession(
-				ElecularSettings.Instance.ProjectId, 
-				session,
-				OnSessionCreated,
-				() =>
+			ElecularSettings.Instance.LoadAllExperiments(() =>
+			{
+				if (optOut)
 				{
-					Debug.LogError("Error while logging user session. Please check if project id is valid.");
+					onInitialized();
+					return;
 				}
-			);
+				var session = new UserActivityApi.Session(
+					SystemInfo.deviceUniqueIdentifier,
+					userData.GetAllSegments(),
+					GetEnvironment()
+				);
+				UserActivityApi.Instance.LogSession(
+					ElecularSettings.Instance.ProjectId, 
+					session,
+					id =>
+					{
+						OnSessionCreated(id);
+						onInitialized();
+					},
+					() =>
+					{
+						Debug.LogError("Error while logging user session. Please check if project id is valid.");
+						onInitialized();
+					}
+				);
+			});
 		}
 
 		private void OnSessionCreated(string id)
@@ -417,8 +440,14 @@ namespace Elecular.API
 		/// </summary>
 		public void Reset()
 		{
-			GameObject.Destroy(GameObject.FindObjectOfType<RequestCoroutineManager>());
-			GameObject.Destroy(GameObject.FindObjectOfType<SessionNotifier>());
+			var coroutineManager = GameObject.FindObjectOfType<RequestCoroutineManager>();
+			var notifier = GameObject.FindObjectOfType<SessionNotifier>();
+			
+			if(coroutineManager != null)
+				GameObject.Destroy(coroutineManager.gameObject);
+			if(notifier != null)
+				GameObject.Destroy(notifier.gameObject);
+			
 			ExperimentsApi.Instance.ClearCache();
 			instance = new ElecularApi();
 		}

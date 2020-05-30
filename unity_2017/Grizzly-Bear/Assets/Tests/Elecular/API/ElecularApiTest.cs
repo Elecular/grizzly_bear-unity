@@ -14,6 +14,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanMakeRequest()
 		{
+			Request.SetMockRequest(null);
 			var response = 0;
 			ElecularApi.Instance.GetVariation("Experiment 1", variation =>
 			{
@@ -28,26 +29,37 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CreatesNewSessionOnInitialize()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var sessions = 0;
+			var onInitializedCalled = 0;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
 				if (!activity.Equals("New Session")) return;
 				sessions++;
 			});
+			ElecularApi.Instance.Initialize(() =>
+			{
+				Assert.AreEqual(sessions, 1);
+				onInitializedCalled++;
+			});
 			
-			ElecularApi.Instance.Initialize();
 			yield return new WaitForSeconds(3);
+			
 			Assert.NotNull(GameObject.FindObjectOfType<RequestCoroutineManager>());
 			Assert.NotNull(GameObject.FindObjectOfType<SessionNotifier>());
 			Assert.AreEqual(sessions, 1);
+			Assert.AreEqual(onInitializedCalled, 1);
 		}
 		
 		[UnityTest]
 		[Timeout(10000)]
 		public IEnumerator DoesNotCreateNewSessionWhenOptedOut()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var sessions = 0;
 			ElecularApi.Instance.OptOut = true;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -66,8 +78,11 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CreateNewSessionWhenOptsBackIn()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var sessions = 0;
+			var initialized = 0;
 			ElecularApi.Instance.OptOut = true;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
@@ -75,11 +90,16 @@ namespace Tests.Elecular.API
 				sessions++;
 			});
 			
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.Initialize(() =>
+			{
+				Assert.AreEqual(sessions, 0);
+				initialized++;
+			});
 			yield return new WaitForSeconds(3);
 			ElecularApi.Instance.OptOut = false;
 			yield return new WaitForSeconds(3);
 			Assert.AreEqual(sessions, 1);
+			Assert.AreEqual(initialized, 1);
 			Assert.True(ElecularApi.Instance.IsTracking);
 		}
 		
@@ -87,7 +107,9 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogUserRetention()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var day1 = false;
 			var day7 = false;
 			var day30 = false;
@@ -118,7 +140,9 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogAdImpression()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var logged = false;
 			
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
@@ -139,8 +163,11 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CannotLogAdImpressionWhenOptedOut()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var logged = false;
+			var initialized = 0;
 			
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
@@ -151,20 +178,26 @@ namespace Tests.Elecular.API
 			});
 
 			ElecularApi.Instance.OptOut = true;
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.Initialize(() =>
+			{
+				Assert.False(logged);
+				initialized++;
+			});
 			yield return new WaitForSeconds(3);
 			ElecularApi.Instance.LogAdImpression("video");
 			yield return new WaitForSeconds(3);
 			Assert.False(logged);
+			Assert.AreEqual(initialized, 1);
 		}
 		
 		[UnityTest]
 		[Timeout(10000)]
 		public IEnumerator CanLogAdClick()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
-			var logged = false;
 			
+			var logged = false;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
 				if (activity.Equals("Ad Click: video"))
@@ -183,9 +216,10 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanLogTransaction()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
-			var logged = false;
 			
+			var logged = false;
 			ElecularApi.Instance.RegisterOnActivityLog((activity) =>
 			{
 				if (activity.Equals("Transaction: item (0.99$)"))
@@ -204,7 +238,9 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CallsOnErrorWithInvalidExperiment()
 		{
+			Request.SetMockRequest(null);
 			LogAssert.ignoreFailingMessages = true;
+			
 			var error = false;
 			ElecularApi.Instance.GetVariation("Invalid Experiment", variation =>
 			{

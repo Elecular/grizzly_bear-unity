@@ -16,14 +16,14 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanSetVariationOfElecularButton()
 		{
-			yield return SceneManager.LoadSceneAsync("Tests/Elecular/TestScene");
+			yield return SceneManager.LoadSceneAsync("Tests/Elecular/Button TestScene");
 			var button = GameObject.Find("Button (Control Group)").GetComponent<Button>();
 			yield return new WaitUntil(() => button.transition == Selectable.Transition.ColorTint);
 			
 			button = GameObject.Find("Button (Variation 1)").GetComponent<Button>();
 			yield return new WaitUntil(() => button.transition == Selectable.Transition.SpriteSwap);
 		}
-		
+
 		[UnityTest]
 		[Timeout(10000)]
 		public IEnumerator ElecularButtonCanBeUpdatedIfFlagIsSet()
@@ -36,13 +36,13 @@ namespace Tests.Elecular.API
 				}"
 			);
 			Request.SetMockRequest(mockRequest);
-			
+
 			//Loading scene and rendering button
-			yield return SceneManager.LoadSceneAsync("Tests/Elecular/TestScene 1");
+			yield return SceneManager.LoadSceneAsync("Tests/Elecular/Button TestScene 2");
 			var button = GameObject.Find("Experiment 1");
 			//Checking if button is rendering variation 1
 			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.ColorTint);
-			
+
 			//Mocking request for creating new session
 			mockRequest = new MockRequest(
 				mockResponse: @"{
@@ -52,7 +52,7 @@ namespace Tests.Elecular.API
 			Request.SetMockRequest(mockRequest);
 			//Initializing Elecular API 
 			ElecularApi.Instance.Initialize();
-			
+
 			//Creating a new session
 			yield return null;
 			var sessionNotifier = GameObject.FindObjectOfType<SessionNotifier>();
@@ -60,20 +60,17 @@ namespace Tests.Elecular.API
 			sessionNotifier.OnApplicationFocus(false);
 			yield return new WaitForSeconds(2);
 			
-			//We are mixing up two requests together. We put the sessions data and variation data in one request
-			//This is because Json.FromUtility only picks up variables it is looking for.
-			//So when Elecular API tried to create a new session, it will only pick up the _id field
-			//And after that when the button tries to get the new variation, it will only pick up the variationName
-			//This is hacky, I know!
-			mockRequest = new MockRequest(
-				mockResponse: @"{
-					""_id"": ""session id 2"",
-					""variationName"": ""Control Group""
-				}"
-			);
-			Request.SetMockRequest(mockRequest);
+			//Setting multiple requests
+			//Elecular API will first load the variation 
+			//And then it creates a new session.
+			Request.SetMultipleMockRequest(new Request[]
+			{
+				new MockRequest(@"{""variationName"": ""Control Group""}"),
+				new MockRequest(@"{""_id"": ""session id 2""}")
+			});
+
 			sessionNotifier.OnApplicationFocus(true);
-			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.SpriteSwap);
+				Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.SpriteSwap);
 		}
 		
 		[UnityTest]
@@ -89,7 +86,7 @@ namespace Tests.Elecular.API
 			Request.SetMockRequest(mockRequest);
 			
 			//Loading scene and rendering button
-			yield return SceneManager.LoadSceneAsync("Tests/Elecular/TestScene 1");
+			yield return SceneManager.LoadSceneAsync("Tests/Elecular/Button TestScene 2");
 			var button = GameObject.Find("Experiment 1");
 			//Checking if button is rendering variation 1
 			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.ColorTint);
@@ -111,12 +108,15 @@ namespace Tests.Elecular.API
 			sessionNotifier.OnApplicationFocus(false);
 			yield return new WaitForSeconds(2);
 			
-			mockRequest = new MockRequest(
-				mockResponse: @"{
-					""_id"": ""session id 2"",
-					""variationName"": ""Control Group""
-				}"
-			);
+			//Setting multiple requests
+			//Elecular API will first load the variation 
+			//And then it creates a new session.
+			Request.SetMultipleMockRequest(new Request[]
+			{
+				new MockRequest(@"{""variationName"": ""Control Group""}"),
+				new MockRequest(@"{""_id"": ""session id 2""}")
+			});
+			
 			Request.SetMockRequest(mockRequest);
 			sessionNotifier.OnApplicationFocus(true);
 			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.ColorTint);

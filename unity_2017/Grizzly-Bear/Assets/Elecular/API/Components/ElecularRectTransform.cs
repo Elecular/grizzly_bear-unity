@@ -43,6 +43,17 @@ namespace Elecular.API
 			[SerializeField] 
 			private Vector3 scale;
 
+			public void Init(Vector2 offsetMin, Vector2 offsetMax, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector3 rotation, Vector3 scale)
+			{
+				this.offsetMin = offsetMin;
+				this.offsetMax = offsetMax;
+				this.anchorMin = anchorMin;
+				this.anchorMax = anchorMax;
+				this.pivot = pivot;
+				this.rotation = rotation;
+				this.scale = scale;
+			}
+
 			/// <inheritdoc />
 			public override Component GetTarget(GameObject gameObject)
 			{

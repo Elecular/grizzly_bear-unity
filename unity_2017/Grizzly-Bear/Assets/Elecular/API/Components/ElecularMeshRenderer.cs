@@ -31,6 +31,11 @@ namespace Elecular.API
             [SerializeField] 
             private Material[] materials;
 
+            public void Init(Material[] materials)
+            {
+                this.materials = materials;
+            }
+
             /// <inheritdoc />
             public override Component GetTarget(GameObject gameObject)
             {

@@ -38,6 +38,13 @@ namespace Elecular.API
 			[SerializeField]
 			private Vector3 scale;
 
+			public void Init(Vector3 position, Vector3 rotation, Vector3 scale)
+			{
+				this.position = position;
+				this.rotation = rotation;
+				this.scale = scale;
+			}
+
 			/// <inheritdoc />
 			public override Component GetTarget(GameObject gameObject)
 			{

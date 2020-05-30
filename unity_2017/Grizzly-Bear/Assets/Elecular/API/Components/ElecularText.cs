@@ -47,6 +47,16 @@ namespace Elecular.API
 			[SerializeField] 
 			private Color color;
 
+			public void Init(string text, Font font, FontStyle fontStyle, int fontSize, TextAnchor alignment, Color color)
+			{
+				this.text = text;
+				this.font = font;
+				this.fontStyle = fontStyle;
+				this.fontSize = fontSize;
+				this.alignment = alignment;
+				this.color = color;
+			}
+
 			/// <inheritdoc />
 			public override Component GetTarget(GameObject gameObject)
 			{

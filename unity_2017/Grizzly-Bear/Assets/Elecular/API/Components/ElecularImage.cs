@@ -38,6 +38,13 @@ namespace Elecular.API
 
 			[SerializeField] private Material material;
 
+			public void Init(Sprite sourceImage, Color color, Material material)
+			{
+				this.sourceImage = sourceImage;
+				this.color = color;
+				this.material = material;
+			}
+
 			/// <inheritdoc />
 			public override Component GetTarget(GameObject gameObject)
 			{

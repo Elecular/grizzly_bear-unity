@@ -50,6 +50,21 @@ namespace Elecular.API
 			
 			[NonSerialized]
 			private bool played;
+			
+			/// <summary>
+			/// Initialises all values
+			/// </summary>
+			/// <param name="audioClip"></param>
+			/// <param name="volume"></param>
+			/// <param name="pitch"></param>
+			/// <param name="playOnAwake"></param>
+			public void Init(AudioClip audioClip, float volume, float pitch, bool playOnAwake)
+			{
+				this.audioClip = audioClip;
+				this.volume = volume;
+				this.pitch = pitch;
+				this.playOnAwake = playOnAwake;
+			}
 
 			/// <inheritdoc />
 			public override Component GetTarget(GameObject gameObject)

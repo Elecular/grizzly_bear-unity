@@ -31,6 +31,11 @@ namespace Elecular.API
 			[SerializeField] 
 			private Mesh mesh;
 
+			public void Init(Mesh mesh)
+			{
+				this.mesh = mesh;
+			}
+
 			/// <inheritdoc />
 			public override Component GetTarget(GameObject gameObject)
 			{

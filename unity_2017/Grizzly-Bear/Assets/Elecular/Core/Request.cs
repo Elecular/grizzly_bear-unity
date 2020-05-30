@@ -20,7 +20,9 @@ namespace Elecular.Core
 
 		private static RequestCoroutineManager coroutineManager;
 
-		private static Request mockRequest; //Used for testing
+		private static int mockRequestIndex;
+		
+		private static Request[] mockRequest; //Used for testing
 
 		/// <summary>
 		/// Makes a new Request entity
@@ -59,10 +61,12 @@ namespace Elecular.Core
 		private static Request ConstructRequest(UnityWebRequest[] requests)
 		{
 			#if UNITY_EDITOR
-			if (mockRequest != null) //Used for testing	
+			if (mockRequest != null && mockRequest[mockRequestIndex] != null) //Used for testing	
 			{
-				mockRequest.unityWebRequests = requests;
-				return mockRequest; 
+				mockRequest[mockRequestIndex].unityWebRequests = requests;
+				var req = mockRequest[mockRequestIndex];
+				mockRequestIndex = (mockRequestIndex + 1) % mockRequest.Length;
+				return req;
 			}
 			if (!Application.isPlaying)
 			{
@@ -106,7 +110,19 @@ namespace Elecular.Core
 		/// <param name="request"></param>
 		public static void SetMockRequest(Request request)
 		{
+			mockRequest = new []{request};
+			mockRequestIndex = 0;
+		}
+		
+		/// <summary>
+		/// This method is used for testing.
+		/// Its sets a mock request that is returned when Get or Post is called
+		/// </summary>
+		/// <param name="request"></param>
+		public static void SetMultipleMockRequest(Request[] request)
+		{
 			mockRequest = request;
+			mockRequestIndex = 0;
 		}
 		
 		private IEnumerator StartProcessingRequest(UnityAction<string> onResponse, UnityAction onError)

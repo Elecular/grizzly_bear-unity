@@ -1,0 +1,1 @@
+Thank you for using Elecular! Please refer to docs.elecular.com for our User Manual and API Reference. If you have any questions or face any issues while using our product, please contact info@elecular.com. 

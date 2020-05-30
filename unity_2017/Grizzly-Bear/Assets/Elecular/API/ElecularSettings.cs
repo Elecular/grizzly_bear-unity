@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Elecular.API
 {
@@ -66,17 +68,29 @@ namespace Elecular.API
 		/// <summary>
 		/// Loads all experiments and puts the results in cache
 		/// </summary>
-		public void LoadAllExperiments()
+		public void LoadAllExperiments(UnityAction onComplete)
 		{
-			foreach (var experiment in experiments)
+			var filteredExperiments = experiments.Where(experiment => experiment != null);
+			
+			var response = 0;
+			var onResponse = new UnityAction(() =>
 			{
-				if (experiment != null)
+				response++;
+				if (response == filteredExperiments.Count() * (Application.isEditor ? 2 : 1)) onComplete();
+			});
+			
+			foreach (var experiment in filteredExperiments)
+			{
+				experiment.GetVariation(variation =>
 				{
-					experiment.GetVariation(variation => {});
-					if (Application.isEditor)
+					onResponse();
+				}, onResponse);
+				if (Application.isEditor)
+				{
+					experiment.GetAllVariations(variations =>
 					{
-						experiment.GetAllVariations(variations => {});
-					}
+						onResponse();
+					}, onResponse);
 				}
 			}
 		}
