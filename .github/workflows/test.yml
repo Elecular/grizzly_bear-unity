@@ -19,10 +19,9 @@ jobs:
         projectPath:
           - unity_2017/Grizzly-Bear
         unityVersion:
-          - 2019.3.14f1-windows
+          - 2019.3.14f1
         testMode:
           - playmode
-          - editmode
 
     steps:
     - uses: actions/checkout@v2
@@ -40,4 +39,3 @@ jobs:
         projectPath: ${{ matrix.projectPath }}
         unityVersion: ${{ matrix.unityVersion }}
         testMode: ${{ matrix.testMode }}
-        artifactsPath: ${{ matrix.testMode }}-artifacts
