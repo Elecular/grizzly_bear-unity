@@ -26,6 +26,6 @@ jobs:
       id: tests
       with:
         projectPath: unity_2017/Grizzly-Bear
-        unityVersion: 2017.4.39f1
+        unityVersion: 2017.4.40
         testMode: playmode
         artifactsPath: playmode-artifacts
