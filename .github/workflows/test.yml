@@ -10,6 +10,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -21,13 +24,11 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+      with:
+        lfs: true
 
     - uses: webbertakken/unity-test-runner@v1.4
       id: tests
-      env:
-        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       with:
         projectPath: unity_2017/Grizzly-Bear
         unityVersion: 2019.3.14f1
-        testMode: playmode
-        artifactsPath: playmode-artifacts
