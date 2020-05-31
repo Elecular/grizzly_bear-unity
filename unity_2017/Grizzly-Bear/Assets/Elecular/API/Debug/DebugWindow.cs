@@ -56,7 +56,7 @@ namespace Elecular.API
 			}
 			else
 			{
-				Label("Elecular Api is not initialized.");
+				Label("Elecular Api is not tracking user activity.");
 			}
 		}
 

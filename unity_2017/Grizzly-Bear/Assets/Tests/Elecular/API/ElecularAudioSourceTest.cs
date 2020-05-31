@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Elecular.API;
+using Elecular.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,7 @@ namespace Tests.Elecular
 		[Timeout(10000)]
 		public IEnumerator CanSetVariationOfElecularAudioSource()
 		{
+			Request.SetMockRequest(null);
 			yield return SceneManager.LoadSceneAsync("Tests/Elecular/Audio TestScene");
 			var audioSource = GameObject.Find("Audio Source (Variation 1)").GetComponent<AudioSource>();
 			yield return new WaitUntil(() => audioSource.clip != null);
@@ -27,6 +29,7 @@ namespace Tests.Elecular
 		[Timeout(10000)]
 		public IEnumerator DoesNotPlayOnAwakeWhenFlagIsDisabled()
 		{
+			Request.SetMockRequest(null);
 			yield return SceneManager.LoadSceneAsync("Tests/Elecular/Audio TestScene");
 			var audioSource = GameObject.Find("Audio Source (Control Group)").GetComponent<AudioSource>();
 

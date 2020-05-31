@@ -54,7 +54,7 @@ namespace Elecular.API
 				var newIndex = EditorGUILayout.Popup(selectedVariationIndex, variations.ToArray());
 				serializedSelectedVariation.stringValue = variations[newIndex];
 				
-				EditorGUILayout.HelpBox("Remember to uncheck this toggle before shipping to your players. Or else they will all experience the selected variation.", MessageType.Warning);
+				EditorGUILayout.HelpBox("Remember to uncheck this toggle before shipping to your players or else they will all experience the selected variation.", MessageType.Warning);
 			}
 			serializedObject.ApplyModifiedProperties();
 		}

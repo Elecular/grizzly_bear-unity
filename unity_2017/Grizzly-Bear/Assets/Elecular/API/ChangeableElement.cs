@@ -40,7 +40,7 @@ namespace Elecular.API
 				variationConfig.EnableTarget(gameObject);
 			}, () =>
 			{
-				Debug.LogError(string.Format("Could not set variation for Game Object: {0}. Please check the Elecular Component.", name));
+				Debug.Log(string.Format("Could not set variation for Game Object: {0}. Please check the Elecular Component.", name));
 			});
 		}
 

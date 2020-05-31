@@ -86,7 +86,7 @@ namespace Elecular.API
 					},
 					() =>
 					{
-						Debug.LogError("Error while logging user session. Please check if project id is valid.");
+						Debug.Log("Error while logging user session. Please check if you are online and your project id is valid.");
 						onInitialized();
 					}
 				);
@@ -407,7 +407,7 @@ namespace Elecular.API
 					if (onActivityLog != null) onActivityLog("Player has opted out of tracking");
 					return;
 				}
-				Debug.LogError("Elecular API is not initialized");
+				Debug.Log("Elecular API is not able to track events. Please check if you are online.");
 				return;
 			}
 			
@@ -421,7 +421,7 @@ namespace Elecular.API
 				}, 
 				() =>
 				{
-					Debug.LogError("Error while logging user activity: " + userAction);
+					Debug.Log("Error while logging user activity: " + userAction);
 				}
 			);
 		}

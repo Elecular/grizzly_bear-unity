@@ -140,8 +140,13 @@ namespace Elecular.Core
 						{
 							error = unityWebRequest.downloadHandler.text;
 						}
-						Debug.LogError(string.Format("The following error occured when Elecular was trying to make an API request:\n{0}", error));
-						if (unityWebRequest.isHttpError && unityWebRequest.responseCode < 500) break;
+						
+						if (unityWebRequest.isHttpError && unityWebRequest.responseCode < 500)
+						{
+							Debug.LogError(string.Format("The following error occured when Elecular was trying to make an API request:\n{0}", error));
+							break;
+						}
+						Debug.Log(string.Format("The following error occured. Please check if you are online:\n{0}", error));
 						continue;
 					}
 

@@ -16,6 +16,7 @@ namespace Tests.Elecular.API
 		[Timeout(10000)]
 		public IEnumerator CanSetVariationOfElecularButton()
 		{
+			Request.SetMockRequest(null);
 			yield return SceneManager.LoadSceneAsync("Tests/Elecular/Button TestScene");
 			var button = GameObject.Find("Button (Control Group)").GetComponent<Button>();
 			yield return new WaitUntil(() => button.transition == Selectable.Transition.ColorTint);

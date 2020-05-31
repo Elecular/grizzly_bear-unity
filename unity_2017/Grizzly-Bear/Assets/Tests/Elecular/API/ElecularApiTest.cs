@@ -3,6 +3,7 @@ using System.Collections;
 using Elecular.API;
 using Elecular.Core;
 using NUnit.Framework;
+using Tests.Elecular.Core;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -252,6 +253,37 @@ namespace Tests.Elecular.API
 			});
 			yield return new WaitUntil(() => error);
 			Assert.AreEqual(GameObject.FindObjectsOfType<RequestCoroutineManager>().Length, 1);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator InitializesEvenWithError()
+		{
+			Request.SetMockRequest(new MockRequest(null));
+			
+			var initialized = 0;
+			ElecularApi.Instance.Initialize(() =>
+			{
+				initialized++;
+			});
+			yield return new WaitUntil(() => initialized == 1);
+		}
+		
+		[UnityTest]
+		[Timeout(10000)]
+		public IEnumerator CannotLogWithError()
+		{
+			Request.SetMockRequest(new MockRequest(null));
+			
+			var initialized = 0;
+			ElecularApi.Instance.Initialize(() =>
+			{
+				initialized++;
+			});
+			yield return new WaitUntil(() => initialized == 1);
+			
+			ElecularApi.Instance.LogAdClick("ad placement");
+			yield return new WaitForSeconds(2);
 		}
 		
 		[TearDown]
