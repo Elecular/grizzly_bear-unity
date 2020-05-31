@@ -19,7 +19,7 @@ jobs:
         projectPath:
           - unity_2017/Grizzly-Bear
         unityVersion:
-          - 2019.3.14f1
+          - 2019.3.14f1-windows
         testMode:
           - playmode
           - editmode
