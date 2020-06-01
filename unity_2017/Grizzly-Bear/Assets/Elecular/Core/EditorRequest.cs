@@ -42,7 +42,7 @@ namespace Elecular.Core
 				if (webRequest.isNetworkError)
 				{
 					throw new Exception(
-						"Error while connecting to Elecular Server. Please check your internet connection. If the problem persists, please contact support@elecular.com"
+						"Error while connecting to Elecular Server. Please check your internet connection. If the problem persists, please contact info@elecular.com"
 					);
 				}
 				if (webRequest.isHttpError)
@@ -51,9 +51,12 @@ namespace Elecular.Core
 						? webRequest.downloadHandler.text 
 						: webRequest.error);
 				}
-				if (webRequest.responseCode == 0) return;
-				onWebResponse(webRequest.downloadHandler.text);
-				EditorApplication.update -= ProcessRequest;
+				if (webRequest.isDone)
+				{
+					onWebResponse(webRequest.downloadHandler.text);
+					webRequest.Dispose();
+					EditorApplication.update -= ProcessRequest;	
+				}
 			}
 			catch (Exception e)
 			{

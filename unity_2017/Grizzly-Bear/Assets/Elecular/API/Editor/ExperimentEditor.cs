@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -62,13 +61,18 @@ namespace Elecular.API
 		private void UpdateAllVariations()
 		{
 			var experiment = (Experiment)target;
+			var experimentName = experiment.ExperimentName;
 			if (experiment.ExperimentName == null || experiment.ExperimentName.Equals("")) return;
 			experiment.GetAllVariations(variations =>
 			{
 				this.variations = variations.Select(variation => variation.Name).ToList();
 				Repaint();
-			}, () =>
+			}, () => 
 			{
+				if(!experimentName.Equals(experiment.ExperimentName))
+				{
+					return;
+				}
 				variations = new List<string>();
 				Repaint();
 			});

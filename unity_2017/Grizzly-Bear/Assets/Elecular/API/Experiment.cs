@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Elecular.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,6 +27,8 @@ namespace Elecular.API
 		[HideInInspector]
 		private string selectedVariation;
 
+		[NonSerialized] private bool warningDisplayed;
+
 		/// <summary>
 		/// Gets the variation that is assigned to the user
 		/// By default, the device id is used as the username
@@ -42,11 +45,15 @@ namespace Elecular.API
 			var forcedVariation = GetForcedVariation();
 			if (forcedVariation != null && !forcedVariation.Equals(""))
 			{
-				Debug.LogWarning(string.Format(
-					"You are setting {0} on {1}", 
-					forcedVariation,
-					experimentName
-				));
+				if (Application.isPlaying && !warningDisplayed)
+				{
+					Debug.LogWarning(string.Format(
+						"You are setting {0} on {1}", 
+						forcedVariation,
+						experimentName
+					));
+					warningDisplayed = true;
+				}
 				ElecularApi.Instance.GetVariation(experimentName, forcedVariation, onResponse, onError);
 				return;
 			}
