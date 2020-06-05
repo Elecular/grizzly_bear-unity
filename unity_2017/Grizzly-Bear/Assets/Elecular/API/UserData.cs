@@ -82,7 +82,7 @@ namespace Elecular.API
 		}
 		
 		/// <summary>
-		/// Adds custom segments. You are allowed to have upto 40 unique segments across your whole project at any given time.
+		/// Adds custom segments. You are allowed to have upto 10 unique segments across your whole project at any given time.
 		/// For example, If user A has segments ["warrior", "axe"] and use B has segments ["mage"], this will add up to 3 unique segments across your whole project.
 		///
 		/// Example Usage: You want to segment users based on level progression.
