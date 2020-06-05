@@ -42,7 +42,7 @@ namespace Elecular.API
 		/// This method creates a new session in Elecular and caches all the experiment variations to avoid flickering effects
 		/// </summary>
 		/// <param name="onInitialized">This callback is triggered when the API is initialized</param>
-		public void Initialize(UnityAction onInitialized = null)
+		public void InitializeWithTracking(UnityAction onInitialized = null)
 		{
 			if (sessionNotifier != null)
 			{

@@ -11,7 +11,7 @@ public class ExampleScript : MonoBehaviour
 	// Use this for initialization
 	void Awake ()
 	{
-		ElecularApi.Instance.Initialize();
+		ElecularApi.Instance.InitializeWithTracking();
 	}
 
 	private void LateUpdate()
