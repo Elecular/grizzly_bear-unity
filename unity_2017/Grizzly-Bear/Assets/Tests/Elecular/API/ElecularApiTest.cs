@@ -40,7 +40,7 @@ namespace Tests.Elecular.API
 				if (!activity.Equals("New Session")) return;
 				sessions++;
 			});
-			ElecularApi.Instance.Initialize(() =>
+			ElecularApi.Instance.InitializeWithTracking(() =>
 			{
 				Assert.AreEqual(sessions, 1);
 				onInitializedCalled++;
@@ -68,7 +68,7 @@ namespace Tests.Elecular.API
 				sessions++;
 			});
 			
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 			yield return new WaitForSeconds(3);
 			Assert.NotNull(GameObject.FindObjectOfType<RequestCoroutineManager>());
 			Assert.NotNull(GameObject.FindObjectOfType<SessionNotifier>());
@@ -91,7 +91,7 @@ namespace Tests.Elecular.API
 				sessions++;
 			});
 			
-			ElecularApi.Instance.Initialize(() =>
+			ElecularApi.Instance.InitializeWithTracking(() =>
 			{
 				Assert.AreEqual(sessions, 0);
 				initialized++;
@@ -133,7 +133,7 @@ namespace Tests.Elecular.API
 				}
 			});
 			
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 			yield return new WaitUntil(() => day1 && day7 && day30);
 		}
 		
@@ -154,7 +154,7 @@ namespace Tests.Elecular.API
 				}
 			});
 			
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
 			ElecularApi.Instance.LogAdImpression("video");
 			yield return new WaitUntil(() => logged);
@@ -179,7 +179,7 @@ namespace Tests.Elecular.API
 			});
 
 			ElecularApi.Instance.OptOut = true;
-			ElecularApi.Instance.Initialize(() =>
+			ElecularApi.Instance.InitializeWithTracking(() =>
 			{
 				Assert.False(logged);
 				initialized++;
@@ -207,7 +207,7 @@ namespace Tests.Elecular.API
 				}
 			});
 			
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
 			ElecularApi.Instance.LogAdClick("video");
 			yield return new WaitUntil(() => logged);
@@ -229,7 +229,7 @@ namespace Tests.Elecular.API
 				}
 			});
 			
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 			yield return new WaitUntil(() => ElecularApi.Instance.IsTracking);
 			ElecularApi.Instance.LogTransaction("item", 0.99m);
 			yield return new WaitUntil(() => logged);
@@ -262,7 +262,7 @@ namespace Tests.Elecular.API
 			Request.SetMockRequest(new MockRequest(null));
 			
 			var initialized = 0;
-			ElecularApi.Instance.Initialize(() =>
+			ElecularApi.Instance.InitializeWithTracking(() =>
 			{
 				initialized++;
 			});
@@ -276,7 +276,7 @@ namespace Tests.Elecular.API
 			Request.SetMockRequest(new MockRequest(null));
 			
 			var initialized = 0;
-			ElecularApi.Instance.Initialize(() =>
+			ElecularApi.Instance.InitializeWithTracking(() =>
 			{
 				initialized++;
 			});

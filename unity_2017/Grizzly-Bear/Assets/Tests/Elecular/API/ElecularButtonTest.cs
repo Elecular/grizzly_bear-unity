@@ -52,7 +52,7 @@ namespace Tests.Elecular.API
 			);
 			Request.SetMockRequest(mockRequest);
 			//Initializing Elecular API 
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 
 			//Creating a new session
 			yield return null;
@@ -100,7 +100,7 @@ namespace Tests.Elecular.API
 			);
 			Request.SetMockRequest(mockRequest);
 			//Initializing Elecular API 
-			ElecularApi.Instance.Initialize();
+			ElecularApi.Instance.InitializeWithTracking();
 			
 			//Creating a new session
 			yield return null;
