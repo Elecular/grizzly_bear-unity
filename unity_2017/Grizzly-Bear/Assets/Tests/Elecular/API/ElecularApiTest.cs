@@ -93,14 +93,15 @@ namespace Tests.Elecular.API
 			
 			ElecularApi.Instance.InitializeWithTracking(() =>
 			{
-				Assert.AreEqual(sessions, 0);
 				initialized++;
 			});
 			yield return new WaitForSeconds(3);
+			Assert.AreEqual(sessions, 0);
+			Assert.AreEqual(initialized, 1);
 			ElecularApi.Instance.OptOut = false;
 			yield return new WaitForSeconds(3);
 			Assert.AreEqual(sessions, 1);
-			Assert.AreEqual(initialized, 1);
+			Assert.AreEqual(initialized, 2);
 			Assert.True(ElecularApi.Instance.IsTracking);
 		}
 		
