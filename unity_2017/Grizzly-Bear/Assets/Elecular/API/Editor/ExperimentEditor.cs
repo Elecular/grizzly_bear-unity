@@ -11,7 +11,6 @@ namespace Elecular.API
 	[CustomEditor(typeof(Experiment))]
 	public class ExperimentEditor : Editor
 	{
-		//TODO: This is getting serialized it should not be serialized
 		[NonSerialized]
 		private List<string> variations = null;
 		
