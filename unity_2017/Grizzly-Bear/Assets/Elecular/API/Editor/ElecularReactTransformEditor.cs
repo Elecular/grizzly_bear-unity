@@ -14,7 +14,7 @@ namespace Elecular.API
 
 		protected override void DrawElementHeader(GameObject gameObject)
 		{
-			EditorGUILayout.HelpBox("Always keep this component unfolded while modifying transform to save the transform state to the variations", MessageType.Warning);
+			EditorGUILayout.HelpBox("Always keep this component expanded while modifying transform", MessageType.Warning);
 		}
 
 		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject, bool assigned)

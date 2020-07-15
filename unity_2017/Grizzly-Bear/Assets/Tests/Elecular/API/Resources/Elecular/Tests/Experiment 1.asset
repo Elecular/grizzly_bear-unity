@@ -13,4 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   experimentName: Experiment 1
   forceVariation: 0
-  selectedVariation: Control Group
+  selectedVariation: Variation 1
