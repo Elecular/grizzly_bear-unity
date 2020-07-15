@@ -8,7 +8,7 @@ namespace Elecular.API
 	public class ElecularTextEditor : ChangeableElementEditor<ElecularText.TextVariationConfiguration> 
 	{
 		/// <inheritdoc />
-		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
+		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject, bool assigned)
 		{
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("text"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("font"));

@@ -79,10 +79,26 @@ namespace Elecular.API
 		/// This is used by editor to preview the variation change on the element
 		/// Do not use in production.
 		/// </summary>
+		public void Preview()
+		{
+			if (Experiment == null) return;
+			Experiment.GetVariation(variation =>
+			{
+				var variationConfig = GetConfiguration(variation.Name);
+				if (variationConfig == null) return;
+				variationConfig.SetupTarget(gameObject);
+				variationConfig.EnableTarget(gameObject);
+			});
+		}
+		
+		/// <summary>
+		/// This is used by editor to preview the variation change on the element
+		/// Do not use in production.
+		/// </summary>
 		public void Preview(string variationName)
 		{
 			var variationConfig = GetConfiguration(variationName);
-			UnityEditor.Undo.RecordObject(variationConfig.GetTarget(gameObject), "Previewed Variation");
+			if (variationConfig == null) return;
 			variationConfig.DisableTarget(gameObject);
 			variationConfig.SetupTarget(gameObject);
 			variationConfig.EnableTarget(gameObject);

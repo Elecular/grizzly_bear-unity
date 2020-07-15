@@ -6,7 +6,7 @@ namespace Elecular.API
     [CustomEditor(typeof(ElecularMeshRenderer))]
     public class ElecularMeshRendererEditor : ChangeableElementEditor<ElecularMeshRenderer.MeshRendererVariationConfiguration> 
     {
-        protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
+        protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject, bool assigned)
         {
             var materials = config.FindPropertyRelative("materials");
             

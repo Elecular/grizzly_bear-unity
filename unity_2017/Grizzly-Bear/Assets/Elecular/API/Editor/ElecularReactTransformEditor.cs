@@ -7,7 +7,17 @@ namespace Elecular.API
 	[CustomEditor(typeof(ElecularRectTransform))]
 	public class ElecularRectTransformEditor : ChangeableElementEditor<ElecularRectTransform.RectTransformVariationConfiguration> 
 	{
-		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
+		private void OnEnable()
+		{
+			UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded((ChangeableElement)target, true);
+		}
+
+		protected override void DrawElementHeader(GameObject gameObject)
+		{
+			EditorGUILayout.HelpBox("Always keep this component unfolded while modifying transform to save the transform state to the variations", MessageType.Warning);
+		}
+
+		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject, bool assigned)
 		{
 			var transform = gameObject.GetComponent<RectTransform>();
 			
@@ -28,9 +38,7 @@ namespace Elecular.API
 			EditorGUILayout.LabelField("Rotation: " + rotation);
 			EditorGUILayout.LabelField("Scale: " + scale);
 			
-			GUILayout.BeginHorizontal();
-			GUILayout.Space(15 * EditorGUI.indentLevel);
-			if (GUILayout.Button("Copy Transform Values"))
+			if (assigned)
 			{
 				config.FindPropertyRelative("offsetMin").vector2Value = transform.offsetMin;
 				config.FindPropertyRelative("offsetMax").vector2Value = transform.offsetMax;
@@ -43,7 +51,6 @@ namespace Elecular.API
 				config.FindPropertyRelative("rotation").vector3Value = transform.localEulerAngles;
 				config.FindPropertyRelative("scale").vector3Value = transform.localScale;
 			}
-			GUILayout.EndHorizontal();
 		}
 
 		protected override void Initialize(SerializedProperty variationConfiguration, GameObject gameObject)

@@ -7,7 +7,7 @@ namespace Elecular.API
 	[CustomEditor(typeof(ElecularImage))]
 	public class ElecularImageEditor : ChangeableElementEditor<ElecularImage.ImageVariationConfiguration> {
 		
-		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject)
+		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject, bool assigned)
 		{
 			var serializedSourceImage = variationConfiguration.FindPropertyRelative("sourceImage");
 			EditorGUILayout.PropertyField(serializedSourceImage);

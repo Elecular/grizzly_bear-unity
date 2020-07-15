@@ -8,7 +8,7 @@ namespace Elecular.API
 	public class ElecularButtonEditor : ChangeableElementEditor<ElecularButton.ButtonVariationConfiguration>
 	{
 		/// <inheritdoc />
-		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject)
+		protected override void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject, bool assigned)
 		{
 			//Transition
 			var serializedTransition = variationConfiguration.FindPropertyRelative("transition");
