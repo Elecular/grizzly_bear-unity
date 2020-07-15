@@ -6,6 +6,11 @@ namespace Elecular.API
 	[CustomEditor(typeof(ElecularTransform))]
 	public class ElecularTransformEditor : ChangeableElementEditor<ElecularTransform.TransformVariationConfiguration>  
 	{
+		private void OnEnable()
+		{
+			UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded((ChangeableElement)target, true);
+		}
+		
 		protected override void DrawElementHeader(GameObject gameObject)
 		{
 			EditorGUILayout.HelpBox("Always keep this component unfolded while modifying transform to save the transform state to the variations", MessageType.Warning);
