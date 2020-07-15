@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Elecular.API
 {
 	[CustomEditor(typeof(Experiment))]
 	public class ExperimentEditor : Editor
 	{
+		[NonSerialized]
 		private List<string> variations = null;
 		
 		private void OnEnable()
@@ -42,6 +46,8 @@ namespace Elecular.API
 			//Drawing variation dropdown
 			EditorGUILayout.Space();
 			EditorGUILayout.HelpBox("If you want to test your game with a specific variation, you can forcefully set the variation.", MessageType.Info);
+			
+			EditorGUI.BeginChangeCheck();
 			var forceVariation = EditorGUILayout.Toggle("Set Variation", serializedForceVariation.boolValue);
 			serializedForceVariation.boolValue = forceVariation;
 			
@@ -52,10 +58,17 @@ namespace Elecular.API
 				
 				var newIndex = EditorGUILayout.Popup(selectedVariationIndex, variations.ToArray());
 				serializedSelectedVariation.stringValue = variations[newIndex];
-				
+
 				EditorGUILayout.HelpBox("Remember to uncheck this toggle before shipping to your players or else they will all experience the selected variation.", MessageType.Warning);
 			}
 			serializedObject.ApplyModifiedProperties();
+			if (EditorGUI.EndChangeCheck())
+			{
+				((Experiment) target).GetVariation(variation =>
+				{
+					UpdateAllElements(variation.Name);
+				});
+			}
 		}
 
 		private void UpdateAllVariations()
@@ -76,6 +89,19 @@ namespace Elecular.API
 				variations = new List<string>();
 				Repaint();
 			});
+		}
+
+		private void UpdateAllElements(string variationName)
+		{
+			var experimentName = ((Experiment) target).ExperimentName;
+			foreach (var element in GameObject.FindObjectsOfType<ChangeableElement>())
+			{
+				if (element.Experiment.ExperimentName.Equals(experimentName))
+				{
+					element.Preview(variationName);
+				}
+			}
+			EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 		}
 	}
 }

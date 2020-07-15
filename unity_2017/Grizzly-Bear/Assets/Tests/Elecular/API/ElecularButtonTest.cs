@@ -66,12 +66,12 @@ namespace Tests.Elecular.API
 			//And then it creates a new session.
 			Request.SetMultipleMockRequest(new Request[]
 			{
-				new MockRequest(@"{""variationName"": ""Control Group""}"),
-				new MockRequest(@"{""_id"": ""session id 2""}")
+				new MockRequest(@"{""_id"": ""session id 2""}"),
+				new MockRequest(@"{""variationName"": ""Control Group""}")
 			});
 
 			sessionNotifier.OnApplicationFocus(true);
-				Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.SpriteSwap);
+			Assert.AreEqual(button.GetComponent<Button>().transition, Selectable.Transition.SpriteSwap);
 		}
 		
 		[UnityTest]

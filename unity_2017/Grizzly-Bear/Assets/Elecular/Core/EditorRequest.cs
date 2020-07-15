@@ -61,8 +61,10 @@ namespace Elecular.Core
 			catch (Exception e)
 			{
 				EditorApplication.update -= ProcessRequest;
+				Debug.Log("Error while making HTTP Request in editor");
 				Debug.LogError(e);
-				onWebError();
+				if(onWebError != null)
+					onWebError();
 			}
 		}
 	}

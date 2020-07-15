@@ -1,5 +1,4 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ namespace Elecular.API
 	public abstract class ChangeableElementEditor<T> : Editor where T : VariationConfiguration
 	{
 		private string activeVariation;
-		
+
 		public override void OnInspectorGUI()
 		{
 			if (!(target is ChangeableElement))
@@ -32,16 +31,6 @@ namespace Elecular.API
 			}
 
 			var hasExperimentNameChanged = HasExperimentNameChanged();
-			
-			//Reset button to reload all configurations
-			EditorGUILayout.Space();
-			if (hasExperimentNameChanged)
-			{
-				EditorGUILayout.HelpBox(
-					"It looks like you have changed the experiment name. Can you please click the Reset button to update the variations.", 
-					MessageType.Error
-				);
-			}
 
 			if (!hasExperimentNameChanged)
 			{
@@ -54,36 +43,42 @@ namespace Elecular.API
 				}
 				
 				UpdateActiveVariation();
-			
+				DrawElementHeader(element.gameObject);
+				
 				for (var count = 0; count < serializedVariations.arraySize; count++)
 				{
 					var serializedVariation = serializedVariations.GetArrayElementAtIndex(count);
 					var variationName = serializedVariation.FindPropertyRelative("variationName").stringValue;
 					var assigned = variationName.Equals(activeVariation);
 					
+					EditorGUI.BeginDisabledGroup(!assigned);
+
 					EditorGUILayout.Space();
 					EditorGUILayout.LabelField(
 						variationName + (assigned ? " (Assigned)" : ""),
 						assigned ? EditorStyles.boldLabel : EditorStyles.label
 					);
 					EditorGUI.indentLevel++;
-				
-					DrawVariationConfiguration(serializedVariation, element.gameObject);
-
+					
+					DrawVariationConfiguration(serializedVariation, element.gameObject, assigned);
+					EditorGUI.EndDisabledGroup();
+					
+					
 					EditorGUILayout.Space();
 					EditorGUILayout.Space();
 					EditorGUI.indentLevel--;
 				}	
 			}
-
-			serializedObject.ApplyModifiedProperties();
-
-			if (GUILayout.Button("Reset"))
+			else
 			{
 				UpdateVariationConfigurations();
 			}
-		}
 
+			serializedObject.ApplyModifiedProperties();
+
+			((ChangeableElement) target).Preview();
+		}
+		
 		private void UpdateVariationConfigurations()
 		{
 			var element = ((ChangeableElement) target);
@@ -145,11 +140,16 @@ namespace Elecular.API
 			var variations = element.Configurations;
 			return variations.Any(variation => !variation.ExperimentName.Equals(experimentName));
 		}
+
+		protected virtual void DrawElementHeader(GameObject gameObject)
+		{
+			
+		}
 		
 		/// <summary>
 		/// Draws the configuration for the changeable element
 		/// </summary>
-		protected abstract void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject);
+		protected abstract void DrawVariationConfiguration(SerializedProperty variationConfiguration, GameObject gameObject, bool assigned);
 		
 		/// <summary>
 		/// Used for defining default values of the variation configurations

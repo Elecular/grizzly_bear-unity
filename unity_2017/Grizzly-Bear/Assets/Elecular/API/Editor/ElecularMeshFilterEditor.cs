@@ -7,7 +7,7 @@ namespace Elecular.API
 	public class ElecularMeshFilterEditor : ChangeableElementEditor<ElecularMeshFilter.MeshFilterVariationConfiguration> 
 	{
 		/// <inheritdoc />
-		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
+		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject, bool assigned)
 		{
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("mesh"));
 		}

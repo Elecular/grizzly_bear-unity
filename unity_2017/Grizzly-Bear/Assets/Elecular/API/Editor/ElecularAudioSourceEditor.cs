@@ -8,7 +8,7 @@ namespace Elecular.API
 	{
 		
 		/// <inheritdoc />
-		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject)
+		protected override void DrawVariationConfiguration(SerializedProperty config, GameObject gameObject, bool assigned)
 		{
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("audioClip"));
 			EditorGUILayout.PropertyField(config.FindPropertyRelative("volume"));
