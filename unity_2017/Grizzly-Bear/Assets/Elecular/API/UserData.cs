@@ -81,9 +81,8 @@ namespace Elecular.API
 			}
 		}
 		
-		/*
+		
 		/// <summary>
-		/// NOTE: DO NOT USE THIS FUNCTION. IT IS STILL UNDER DEVELOPMENT. YOUR APPLICATION WILL MOST LIKELY BREAK IF YOU ADD CUSTOM SEGMENTS
 		/// Adds custom segments. You are allowed to have upto 10 unique segments across your whole project at any given time.
 		/// For example, If user A has segments ["warrior", "axe"] and use B has segments ["mage"], this will add up to 3 unique segments across your whole project.
 		///
@@ -101,7 +100,7 @@ namespace Elecular.API
 					.Select(segment => string.Format("custom/{0}",segment))
 			);
 		}
-		*/
+		
 		
 		/// <summary>
 		/// Gets a list of segments this user belong to

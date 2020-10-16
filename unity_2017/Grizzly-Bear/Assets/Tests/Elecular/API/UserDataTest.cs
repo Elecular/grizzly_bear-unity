@@ -79,13 +79,13 @@ namespace Tests.Elecular.API
 			Assert.NotNull(data.GetAllSegments().FirstOrDefault(segment => segment.Contains("platform")));
 		}
 		
-		/*[Test]
+		[Test]
 		public void UserCanHaveCustomSegments() {
 			var data = new UserData();
 			data.AddCustomSegments(new List<string>(){"custom1", null, "custom2"});
 			Assert.Contains("custom/custom1", data.GetAllSegments());
 			Assert.Contains("custom/custom2", data.GetAllSegments());
-		}*/
+		}
 		
 		[Test]
 		public void CanNotHaveRetention() {
